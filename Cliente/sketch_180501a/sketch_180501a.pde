@@ -4,12 +4,15 @@ float posy = 100;
 float pos2x = 300;
 float pos2y = 200;
 
+float x = 30;
+float y = 59;
+float z = 370;
+float w = 59;
 
 float speed = 10;
 float energia = 200;
 float energia2 = 200;
-
-
+import java.awt.event.KeyEvent;
 
 void setup(){
 size(800, 600);
@@ -20,17 +23,37 @@ void draw(){
 background (0);
 display();
 }
+void imagem1(float x, float y){
+  rectMode(CENTER);
+  rect(30,30,55,55);
+  fill(100,0,100);
+  ellipse(x,y-30,50,50);
+  fill(255,255,255);
+  ellipse(x-19,y-30,13.333,18.333);
+  ellipse(x+19,y-30,13.333,18.333);
+}
+
+void imagem2(float z, float w){
+  rectMode(CENTER);
+  rect(z,30,55,55);
+  fill(0,100,100);
+  ellipse(z,w-30,50,50);
+  fill(255,255,255);
+  ellipse(z-19,w-30,13.333,18.333);
+  ellipse(z+19,w-30,13.333,18.333);
+}
+
 void barra(){
   fill(200,0,0);
-  rect(150,20,energia,20);
+  rect(160,20,energia,20);
 }
 void barra2(){
   fill(200,0,0);
-  rect(600,20,energia,20);
+  rect(500,20,energia2,20);
 }
 
 void jogador1(){
-  fill(0,0,200);
+  fill(100,0,100);
   //background (75);
   rectMode(CENTER);
   rect(posx,posy,20,100);
@@ -50,7 +73,7 @@ void jogador1(){
 }
 
 void jogador2(){
-  fill(0,0,200);
+  fill(0,100,100);
   //background (75);
   rectMode(CENTER);
   rect(pos2x,pos2y,20,100);
@@ -70,12 +93,18 @@ void jogador2(){
 
 void display(){
   //fill(0,255,0);
-  jogador1();
-  jogador2();
+  background (75);
   
-  barra2();
 if( energia > 0){
+  imagem1(x,y);
+  jogador1();
   barra();
+}
+
+if( energia2 > 0){
+  imagem2(z,w);
+  jogador2();
+  barra2();
 }
 }
 void keyPressed(){
@@ -83,4 +112,10 @@ void keyPressed(){
   if(key == 's'){posy = posy + speed; energia = energia -1;}
   if(key == 'a'){posx = posx - speed;energia = energia -1;}
   if(key == 'd'){posx = posx + speed; energia = energia -1;}
+  
+  if(key == '8'){pos2y = pos2y - speed; energia2 = energia2 -1;}
+  if(key == '5'){pos2y = pos2y + speed; energia2 = energia2 -1;}
+  if(key == '4'){pos2x = pos2x - speed;energia2 = energia2 -1;}
+  if(key == '6'){pos2x = pos2x + speed; energia2 = energia2 -1;}
+  
 }
