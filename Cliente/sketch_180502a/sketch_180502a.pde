@@ -8,7 +8,7 @@ abstract class Obj {
     coordy = y;
   }
   
-  abstract void move(int x);
+  //abstract void move(int x);
   abstract void display();
 }
 
@@ -36,10 +36,12 @@ class player extends Obj{
   }
   void display(){
     fill(255,0,0);
-    ellipse(100,70,60,60);
-    fill(0,0,0);
-    ellipse(81,70,16,32); 
-    ellipse(119,70,16,32); 
+    ellipse(coordx,coordy-30,60,60);
+    fill(255,255,255);
+    ellipse(coordx-19,coordy-30,16,32); 
+    ellipse(coordx+19,coordy-30,16,32);
+    fill(200,0,0);
+    rect(150,20,gasoline,20);
   }  
 }
 
@@ -50,7 +52,7 @@ class enemy extends Obj{
   }
   void display(){
     fill(0,255,0);
-    ellipse(100,70,60,60);
+    ellipse(coordx,coordy,60,60);
   }
 }
 
@@ -61,7 +63,7 @@ class gasoline extends Obj{
   }
   void display(){
     fill(0,0,255);
-    ellipse(100,70,60,60);  
+    ellipse(coordx,coordy,60,60);  
   }
 }
 
@@ -82,6 +84,7 @@ class game {
   }
      
   void display(){
+    size(800, 600);
     background (75);
     rectMode(CENTER);
     rect(150,100,20,100);
