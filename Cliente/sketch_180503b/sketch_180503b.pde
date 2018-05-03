@@ -14,16 +14,16 @@ float energia = 200;
 float energia2 = 200;
 
 PImage background;
-PImage playerCanada;
+PImage player1;
 PImage player2;
 
 import java.awt.event.KeyEvent;
 
 void setup(){
-  size(1280, 720);
-  background=loadImage("background.jpg");
-  playerCanada=loadImage("Canada.png");
-  player2=loadImage("pais.png");
+  size(1920, 1080);
+  background=loadImage("background4.jpg");
+  player1=loadImage("Canada.png");
+  player2=loadImage("portugal.png");
 }
 
 void draw(){
@@ -31,7 +31,7 @@ void draw(){
   display();
 }
 void imagem1(float x, float y){
-  image(playerCanada,x,y,50,50);
+  image(player1,x,y,50,50);
 }
 
 void imagem2(float z, float w){
@@ -49,14 +49,14 @@ void barra2(){
 
 void jogador1(){
   tint(255, 255-(200-energia));
-  image(playerCanada,posx,posy-30,100,100);
+  image(player1,posx,posy-30,100,100);
   tint(255, 255);
   
 }
 
 void jogador2(){
   tint(255, 255- (200-energia2));
-  image(player2,pos2x,pos2y-30,100,100);
+  image(player2,pos2x,pos2y-30,90,90);
   tint(255, 255);
 }
 
