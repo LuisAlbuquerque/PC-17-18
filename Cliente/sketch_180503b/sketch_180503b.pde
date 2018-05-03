@@ -48,16 +48,22 @@ void barra2(){
 }
 
 void jogador1(){
+  tint(255, 255-(200-energia));
   image(playerCanada,posx,posy-30,100,100);
+  tint(255, 255);
   
 }
 
 void jogador2(){
+  tint(255, 255- (200-energia2));
   image(player2,pos2x,pos2y-30,100,100);
+  tint(255, 255);
 }
 
+
+ 
 void display(){
-  barra2();
+  
 if( energia > 0){
   imagem1(x,y);
   jogador1();
@@ -72,9 +78,10 @@ else{
 }
 
 if( energia2 > 0){
-  jogador2();
-  
   imagem2(z,w);
+  jogador2();
+  barra2();
+  
 }
 else{
   PFont font;
