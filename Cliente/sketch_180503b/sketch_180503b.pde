@@ -4,6 +4,12 @@ float posy = 340;
 float pos2x =640;
 float pos2y = 340;
 
+float angle = 0;
+
+PVector v1, v2;
+
+boolean[] keyboard={false,false,false};
+
 float x = 0;
 float y = 0;
 float z = 450;
@@ -24,6 +30,8 @@ void setup(){
   background=loadImage("background4.jpg");
   player1=loadImage("Canada.png");
   player2=loadImage("portugal.png");
+  v1 = new PVector(40, 20);
+  v2 = new PVector(25, 50);
 }
 
 void draw(){
@@ -48,54 +56,61 @@ void barra2(){
 }
 
 void jogador1(){
+  pushMatrix();
+  translate(v1.x,v1.y);
+  rotate(angle);
+  translate(-50,-50);
   tint(255, 255-(200-energia));
-  image(player1,posx,posy-30,100,100);
+  image(player1,0,0,100,100);
   tint(255, 255);
-  
+  popMatrix();
 }
 
 void jogador2(){
   tint(255, 255- (200-energia2));
-  image(player2,pos2x,pos2y-30,90,90);
+  image(player2,v2.x,v2.y-30,90,90);
   tint(255, 255);
 }
 
 
  
 void display(){
+  if(keyboard[0] == true){v1.add((PVector.fromAngle(angle)).setMag(10)); energia -= 0.5;}
+  if(keyboard[1] == true){angle-=0.05;}
+  if(keyboard[2] == true){angle+=0.05;}
   
-if( energia > 0){
-  imagem1(x,y);
-  jogador1();
-  barra();
-}
-else{
-  PFont font;
-  font = createFont("Georgia Bold", 60);
-  textFont(font);
-  fill(255,215,0);
-  text("Game Over", 10, 50);
-}
 
-if( energia2 > 0){
-  imagem2(z,w);
-  jogador2();
-  barra2();
+  if( energia > 0){
+    imagem1(x,y);
+    jogador1();
+    barra();
+  }
+  else{
+    PFont font;
+    font = createFont("Georgia Bold", 60);
+    textFont(font);
+    fill(255,215,0);
+    text("Game Over", 10, 50);
+  }
+
+  if( energia2 > 0){
+    imagem2(z,w);
+    jogador2();
+    barra2();
   
-}
-else{
-  PFont font;
-  font = createFont("Georgia Bold", 60);
-  textFont(font);
-  fill(255,215,0);
-  text("Game Over", 370, 50);
-}
+  }
+  else{
+    PFont font;
+    font = createFont("Georgia Bold", 60);
+    textFont(font);
+    fill(255,215,0);
+    text("Game Over", 370, 50);
+  }
 }
 void keyPressed(){
-  if(key == 'w'){posy = posy - speed; energia = energia -1;}
-  if(key == 's'){posy = posy + speed; energia = energia -1;}
-  if(key == 'a'){posx = posx - speed;energia = energia -1;}
-  if(key == 'd'){posx = posx + speed; energia = energia -1;}
+  if(key == 'w'){keyboard[0]=true;}
+  if(key == 'a'){keyboard[1]=true;}
+  if(key == 'd'){keyboard[2]=true;}
   
   if (key == CODED) {
     if (keyCode == DOWN){
@@ -109,4 +124,11 @@ void keyPressed(){
     }
   }
       
+}
+
+
+void keyReleased(){
+    if(key == 'w'){keyboard[0]=false;}
+    if(key == 'a'){keyboard[1]=false;}
+    if(key == 'd'){keyboard[2]=false;}
 }
