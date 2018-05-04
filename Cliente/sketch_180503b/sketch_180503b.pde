@@ -15,7 +15,7 @@ float y = 0;
 float z = 450;
 float w = 0;
 
-float speed = 10;
+int speed = 1;
 float energia = 200;
 float energia2 = 200;
 
@@ -78,9 +78,9 @@ void jogador2(){
 
  
 void display(){
-  if(keyboard[0] == true){v1.add((PVector.fromAngle(angle)).setMag(10)); energia -= 0.5;}
-  if(keyboard[1] == true){angle-=0.05;}
-  if(keyboard[2] == true){angle+=0.05;}
+  if(keyboard[0] == true){v1.add(((PVector.fromAngle(angle)).setMag(speed)).limit(30)); energia -= 0.5;speed+=1;}else{speed=1;}
+  if(keyboard[1] == true){angle-=0.08;}
+  if(keyboard[2] == true){angle+=0.08;}
   
 
   if( energia > 0){
