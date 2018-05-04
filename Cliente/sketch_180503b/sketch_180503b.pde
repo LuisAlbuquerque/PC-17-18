@@ -22,6 +22,8 @@ float energia2 = 200;
 PImage background;
 PImage player1;
 PImage player2;
+PImage gameOver;
+
 
 import java.awt.event.KeyEvent;
 
@@ -30,6 +32,7 @@ void setup(){
   background=loadImage("background4.jpg");
   player1=loadImage("Canada.png");
   player2=loadImage("portugal.png");
+  gameOver= loadImage("GameOver.jpg");
   v1 = new PVector(40, 20);
   v2 = new PVector(25, 50);
 }
@@ -85,13 +88,6 @@ void display(){
     jogador1();
     barra();
   }
-  else{
-    PFont font;
-    font = createFont("Georgia Bold", 60);
-    textFont(font);
-    fill(255,215,0);
-    text("Game Over", 10, 50);
-  }
 
   if( energia2 > 0){
     imagem2(z,w);
@@ -99,12 +95,8 @@ void display(){
     barra2();
   
   }
-  else{
-    PFont font;
-    font = createFont("Georgia Bold", 60);
-    textFont(font);
-    fill(255,215,0);
-    text("Game Over", 370, 50);
+  if(energia <=0 || energia2 <= 0){
+    background(gameOver);
   }
 }
 void keyPressed(){
