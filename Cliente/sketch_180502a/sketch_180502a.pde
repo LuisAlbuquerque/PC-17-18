@@ -4,11 +4,12 @@ abstract class Obj {
   
   public PVector coords;
   public PImage image;
+  public float speed;
   
-  Obj(int x, int y,String s){
+  Obj(int x, int y,String s,float sp){
     coords = new PVector(x, y);
     image = loadImage(s);
-
+    speed = sp;
   }
   
   //abstract void move(int x);
@@ -19,21 +20,21 @@ class player extends Obj{
   
   public int number;
   public int ink;
-  public int angle;
+  public float angle;
   
   player(int x, int y, String s, int n){
-    super(x,y,s);
+    super(x,y,s,1);
     angle = 0;
     ink = 200;
     number = n;
   }
-  void display(){
-    if(keyboard[0] == true){coords.add((PVector.fromAngle(angle)).setMag(10)); ink -= 0.5;}
-    if(keyboard[1] == true){angle-=0.05;}
-    if(keyboard[2] == true){angle+=0.05;}
+  void display(){ //<>//
+    if(keyboard[0] == true && number == 0){coords.add(((PVector.fromAngle(angle)).setMag(speed)).limit(16)); ink -= 1;speed+=1;}else{speed=1;}
+    if(keyboard[1] == true && number == 0){angle-=0.1;}
+    if(keyboard[2] == true && number == 0){angle+=0.1;} //<>//
     
     if(ink > 0){
-      //vida //<>//
+      //vida
       image(image,450*number,0,50,50);
       fill(200,0,0);
       rect(50+450*number,20,ink,20);
@@ -41,9 +42,9 @@ class player extends Obj{
       pushMatrix();
       translate(coords.x,coords.y);
       rotate(angle);
-      translate(-50,-50);
+      translate(-30,-30);
       tint(255, 255-(200-ink));
-      image(image,0,0,100,100);
+      image(image,0,0,60,60);
       tint(255, 255);
       popMatrix();
   }else{
@@ -59,12 +60,12 @@ class player extends Obj{
 class enemy extends Obj{
   
   enemy(){
-    super(int(random(0,800)),int(random(0,600)),"enemy.png");
+    super(int(random(0,800)),int(random(0,600)),"enemy2.png",random(0,20));
   }
   void display(){
       pushMatrix();
       translate(coords.x,coords.y);
-      image(image,0,0,100,100);
+      image(image,0,0,40,40);
       popMatrix();
   }
 }
@@ -72,12 +73,12 @@ class enemy extends Obj{
 class inkOrb extends Obj{
   
   inkOrb(){
-    super(int(random(0,800)),int(random(0,600)),"ink.png");
+    super(int(random(0,800)),int(random(0,600)),"ink2.png",0);
   }
   void display(){
       pushMatrix();
       translate(coords.x,coords.y);
-      image(image,0,0,100,100);
+      image(image,0,0,40,40);
       popMatrix();  
   }
 }
