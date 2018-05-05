@@ -1,12 +1,21 @@
 //variaveis do menu
-// consts for states  
+ 
 final int stateGame=0;
 final int stateMenu = 1;
 final int tamanho = 2;
 final int stateHelp = 3;  // when he hits F1 
-// current state 
+
+float mx1 = 200;
+float my1 = 150;
+float mx2 = 200;
+float my2 = 250;
+float mx3 = 200;
+float my3 = 350;
+float mw = 150;
+float mh = 80;
+
 int state = stateMenu;
-//
+
 int playerNumber = 0;
 
 // restantes variáveis
@@ -17,15 +26,16 @@ float posy = 340;
 float pos2x =640;
 float pos2y = 340;
 
-float angle = 0;
+float angle1 = 0;
+float angle2 = 0;
 
 PVector v1, v2;
 
-boolean[] keyboard={false,false,false};
+boolean[] keyboard={false,false,false, false, false, false};
 
 float x = 0;
 float y = 0;
-float z = 450;
+float z = 350;
 float w = 0;
 
 float speed = 10;
@@ -83,30 +93,62 @@ void drawForStateGame() {
 }
 
 void drawForStateHelp() {
-  text("the help...", 200, 100);
+  text("Teclas:", 20, 100);
+  text("Criaturas:",20,210);
+  textSize(18);
+  text("As setas esquerda e direita provocam aceleração angular, na direcção respectiva, a seta", 20,120);
+  text("para a frente provoca aceleração linear na direcção para onde está voltado o jogador.", 20,140);
+  text("Cada propulsor gasta energia enquanto está a ser actuado;", 20, 160);
+  text("As baterias são carregadas lentamente.", 20, 180);
+  text("As criaturas verdes quando capturadas dão energia, até ao máximo da bateria.",20,230);
+  text("As criaturas vermelhas, aparecem a cada 10 segundos numa posição aleatória.",20,250); 
+  textSize(10);
+  text("Clique x para voltar ao menu",20,300);
 }
 void drawStateTamanho(){
   text("Escolha o tamanho da janela", 200, 100);
   text("  1- 640x480 ", 200, 150);
   text("  2- 800x600 ", 200, 200);
-  text("  3- 1024x768 ", 200, 250);
 }
 
 void drawForStateMenu() {
-  text("the menu", 200, 100);
-  text("  Clica 1 para jogar ", 200, 150);
-  text("  Clica x para sair ", 200, 200);
+  text("MENU", 200, 100);
+  fill(255);
+  stroke(204, 102, 0);
+  rect(mx1,my1,mw,mh);
+  fill(0);
+  text(" Jogar ", 230, 200);
+  fill(255);
+  rect(mx2,my2,mw,mh);
+  fill(0);
+  text(" Sair ", 230, 300);
+  fill(255);
+  rect(mx3,my3,mw,mh);
+  fill(0);
+  text(" Ajuda ", 230, 400);
   
 }
+void tamanhoB(int a, int b){
+        surface.setSize(a,b);
+        image(background, 0,0);
+        background.resize(a, b);
+        image(background, 0,0);
+        
+        image(gameOver, 0,0);
+        gameOver.resize(a, b);
+        image(gameOver, 0,0);
 
+}
 
+//-----------------------------------------------------------------------------------------//
+//jogadores
 
 void imagem1(float x, float y){
   image(player1,x,y,50,50);
 }
 
 void imagem2(float z, float w){
-  image(player2,450,0,50,50);
+  image(player2,z,w,50,50);
 }
 
 void barra(){
@@ -115,33 +157,39 @@ void barra(){
 }
 void barra2(){
   fill(200,0,0);
-  rect(500,20,energia2,20);
+  rect(400,20,energia2,20);
 }
 
 void jogador1(){
   pushMatrix();
   translate(v1.x,v1.y);
-  rotate(angle);
+  rotate(angle1);
   translate(-50,-50);
   tint(255, 255-(200-energia));
-  image(player1,0,0,100,100);
+  image(player1,x+5,y+100,100,100);
   tint(255, 255);
   popMatrix();
 }
 
 void jogador2(){
+  pushMatrix();
+  translate(v2.x,v2.y);
+  rotate(angle2);
+  translate(-50,-50);
   tint(255, 255- (200-energia2));
-  image(player2,v2.x,v2.y-30,90,90);
+  image(player2,z,w+100,90,90);
   tint(255, 255);
+  popMatrix();
 }
 
-
- 
 void display(){
-  if(keyboard[0] == true){v1.add((PVector.fromAngle(angle)).setMag(10)); energia -= 0.5;}
-  if(keyboard[1] == true){angle-=0.05;}
-  if(keyboard[2] == true){angle+=0.05;}
+  if(keyboard[0] == true){v1.add((PVector.fromAngle(angle1)).setMag(10)); energia -= 0.5;}
+  if(keyboard[1] == true){angle1-=0.05;}
+  if(keyboard[2] == true){angle1+=0.05;}
   
+  if(keyboard[3] == true){v2.add((PVector.fromAngle(angle2)).setMag(10)); energia2 -= 0.5;}
+  if(keyboard[4] == true){angle2-=0.05;}
+  if(keyboard[5] == true){angle2+=0.05;}
 
   if( energia > 0){
     imagem1(x,y);
@@ -173,108 +221,78 @@ void keyPressed() {
       state =  stateHelp;
     } // if 
     break;
+  
   case tamanho:
-  
-  
-    switch(key){
+      switch(key){
       case '1':
-       
-        surface.setSize(640,480);
-        image(background, 0,0);
-        background.resize(640, 480);
-        image(background, 0,0);
-        image(player1, 0,0);
-        player1.resize(640, 480);
-        image(player1, 0,0);
-        image(player2, 0,0);
-        player2.resize(640, 480);
-        image(player2, 0,0);
-        image(gameOver, 0,0);
-        gameOver.resize(640, 480);
-        image(gameOver, 0,0);
+        tamanhoB(640,480);
+        state = stateGame;
         break;
       case '2':
-        
-        surface.setSize(800,600);
-        image(background, 0,0);
-        background.resize(800, 600);
-        image(background, 0,0);
-        image(player1, 0,0);
-        player1.resize(800, 600);
-        image(player1, 0,0);
-        image(player2, 0,0);
-        player2.resize(800, 600);
-        image(player2, 0,0);
-        image(gameOver, 0,0);
-        gameOver.resize(800, 600);
-        image(gameOver, 0,0);
-        break;
-      case '3':
-        
-        surface.setSize(1024,768);
-        image(background, 0,0);
-        background.resize(1024, 768);
-        image(background, 0,0);
-        image(player1, 0,0);
-        player1.resize(1024, 768);
-        image(player1, 0,0);
-        image(player2, 0,0);
-        player2.resize(1024, 768);
-        image(player2, 0,0);
-        image(gameOver, 0,0);
-        gameOver.resize(1024, 768);
-        image(gameOver, 0,0);
+        tamanhoB(800,600);
+        state = stateGame;
         break;
      default :
         println ("unknown input");
         break;
-    }
-    
-    
+     }
   case stateHelp:
-    // back to game 
-    state = stateGame;
+    if (key=='x') {
+      state = stateMenu;
+    }
+    if (keyCode==java.awt.event.KeyEvent.VK_F1) {
+      state = stateGame;
+    }
     break;  
-  case stateMenu:
-    // read key in menu
-    switch (key) {
-    case '1' :
-      playerNumber = 2;
-      state = tamanho;
-      break;
-    case 'x':
-      exit();
-      break;
-    default :
-      println ("unknown input");
-      break;
-    } // inner switch  
-    break; 
+  
   default:
     // error 
     break;
-  } // switch
+  }// switch
   //
   if(key == 'w'){keyboard[0]=true;}
   if(key == 'a'){keyboard[1]=true;}
   if(key == 'd'){keyboard[2]=true;}
   
   if (key == CODED) {
-    if (keyCode == DOWN){
-      pos2y = pos2y + speed; energia2 = energia2 -1;
-    }if (keyCode == UP){
-      pos2y = pos2y - speed; energia2 = energia2 -1;
+    if (keyCode == UP){
+      keyboard[3]=true;
     }if (keyCode == LEFT){
-      pos2x = pos2x - speed;energia2 = energia2 -1;
+      keyboard[4]=true;
     }if (keyCode == RIGHT){
-      pos2x = pos2x + speed; energia2 = energia2 -1;
+      keyboard[5]=true;
     }
   }
 }
-
+void mousePressed() {
+  switch(state){
+    case stateMenu:
+       if(mouseX>mx1 && mouseX <mx1+mw && mouseY>my1 && mouseY <my1+mh){
+        state = tamanho;
+        println("The mouse is pressed the button jogar"); 
+      }
+      if(mouseX>mx2 && mouseX <mx2+mw && mouseY>my2 && mouseY <my2+mh){
+       exit();
+       println("The mouse is pressed the button sair"); 
+      }
+      if(mouseX>mx3 && mouseX <mx3+mw && mouseY>my3 && mouseY <my3+mh){
+       state = stateHelp;
+       println("The mouse is pressed the button ajuda"); 
+      }
+  }
+}
 
 void keyReleased(){
     if(key == 'w'){keyboard[0]=false;}
     if(key == 'a'){keyboard[1]=false;}
     if(key == 'd'){keyboard[2]=false;}
+    if (key == CODED) {
+      if (keyCode == UP){
+        keyboard[3]=false;
+      }if (keyCode == LEFT){
+        keyboard[4]=false;
+      }if (keyCode == RIGHT){
+        keyboard[5]=false;
+      }
+    }
 }
