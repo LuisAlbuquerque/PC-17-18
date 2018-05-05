@@ -11,8 +11,19 @@ float mx2 = 200;
 float my2 = 250;
 float mx3 = 200;
 float my3 = 350;
+
+float tx1 = 180;
+float ty1 = 125;
+float tx2 = 180;
+float ty2 = 175;
+float tx3 = 180;
+float ty3 = 225;
+
 float mw = 150;
 float mh = 80;
+float tw = 30;
+float th = 30;
+
 
 int state = stateMenu;
 
@@ -47,8 +58,14 @@ PImage player1;
 PImage player2;
 PImage gameOver;
 
-
+// musica
+import processing.sound.*;
 import java.awt.event.KeyEvent;
+import ddf.minim.*;
+
+AudioPlayer song;
+Minim minim;
+SoundFile file;
 
 void setup(){
   size(800, 600);
@@ -59,6 +76,12 @@ void setup(){
   gameOver= loadImage("GameOver.jpg");
   v1 = new PVector(40, 20);
   v2 = new PVector(25, 50);
+  
+  //musica
+  minim = new Minim(this);
+  song = minim.loadFile("starWars.mp3", 5048);
+  song.play();
+  
 }
 void draw () { 
   // runs on and on in a loop
@@ -107,14 +130,20 @@ void drawForStateHelp() {
 }
 void drawStateTamanho(){
   text("Escolha o tamanho da janela", 200, 100);
-  text("  1- 640x480 ", 200, 150);
-  text("  2- 800x600 ", 200, 200);
+  text("  640x480 ", 200, 150);
+  text("  800x600 ", 200, 200);
+  text("  1366x768 ", 200, 250);
+  
+   fill(255, 69,0);
+   rect(tx1,ty1,tw,th);
+   rect(tx2,ty2,tw,th);
+   rect(tx3,ty3,tw,th);
 }
 
 void drawForStateMenu() {
   text("MENU", 200, 100);
   fill(255);
-  stroke(204, 102, 0);
+ 
   rect(mx1,my1,mw,mh);
   fill(0);
   text(" Jogar ", 230, 200);
@@ -137,7 +166,6 @@ void tamanhoB(int a, int b){
         image(gameOver, 0,0);
         gameOver.resize(a, b);
         image(gameOver, 0,0);
-
 }
 
 //-----------------------------------------------------------------------------------------//
@@ -214,42 +242,27 @@ void display(){
 void keyPressed() {
   // states: 
   switch(state) {
-  case stateGame:
-    //     
-    if (keyCode==java.awt.event.KeyEvent.VK_F1) {
+    case stateGame:
+        
+      if (keyCode==java.awt.event.KeyEvent.VK_F1) {
       // F1
-      state =  stateHelp;
-    } // if 
+        state =  stateHelp;
+      } 
     break;
-  
-  case tamanho:
-      switch(key){
-      case '1':
-        tamanhoB(640,480);
+    
+    case stateHelp:
+      if (key=='x') {
+        state = stateMenu;
+      }
+      if (keyCode==java.awt.event.KeyEvent.VK_F1) {
         state = stateGame;
-        break;
-      case '2':
-        tamanhoB(800,600);
-        state = stateGame;
-        break;
-     default :
-        println ("unknown input");
-        break;
-     }
-  case stateHelp:
-    if (key=='x') {
-      state = stateMenu;
-    }
-    if (keyCode==java.awt.event.KeyEvent.VK_F1) {
-      state = stateGame;
-    }
-    break;  
+      }
+      break;  
   
-  default:
-    // error 
-    break;
-  }// switch
-  //
+     default:
+       break;
+    }
+  
   if(key == 'w'){keyboard[0]=true;}
   if(key == 'a'){keyboard[1]=true;}
   if(key == 'd'){keyboard[2]=true;}
@@ -279,8 +292,54 @@ void mousePressed() {
        state = stateHelp;
        println("The mouse is pressed the button ajuda"); 
       }
+      
+     case tamanho:
+       if(mouseX>tx1 && mouseX <tx1+tw && mouseY>ty1 && mouseY <ty1+th){
+         int a = 640; int b = 480;
+        surface.setSize(a,b);
+        image(background, 0,0);
+        background.resize(a, b);
+        image(background, 0,0);
+        
+        image(gameOver, 0,0);
+        gameOver.resize(a, b);
+        image(gameOver, 0,0);
+        state = stateGame;
+        
+        println("The mouse is pressed the button 1"); 
+      }
+      if(mouseX>tx2 && mouseX <tx2+tw && mouseY>ty2 && mouseY <ty2+th){
+        int a = 800; int b = 600;
+        surface.setSize(a,b);
+        image(background, 0,0);
+        background.resize(a, b);
+        image(background, 0,0);
+        
+        image(gameOver, 0,0);
+        gameOver.resize(a, b);
+        image(gameOver, 0,0);
+        state = stateGame;
+        state = stateGame;
+       
+       println("The mouse is pressed the button 2"); 
+      }
+      if(mouseX>tx3 && mouseX <tx3+tw && mouseY>ty3 && mouseY <ty3+th){
+        int a = 1366; int b = 768;
+        surface.setSize(a,b);
+        image(background, 0,0);
+        background.resize(a, b);
+        image(background, 0,0);
+        
+        image(gameOver, 0,0);
+        gameOver.resize(a, b);
+        image(gameOver, 0,0);
+        state = stateGame;
+
+       println("The mouse is pressed the button 3"); 
+      }
   }
 }
+
 
 void keyReleased(){
     if(key == 'w'){keyboard[0]=false;}
