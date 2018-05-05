@@ -25,7 +25,7 @@ class player extends Obj{
   player(int x, int y, String s, int n){
     super(x,y,s,1);
     angle = 0;
-    ink = 200;
+    ink = 300;
     number = n;
   }
   void display(){ //<>//
