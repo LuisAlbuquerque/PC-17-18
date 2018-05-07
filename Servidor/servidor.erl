@@ -12,11 +12,12 @@ length([H|T])-> 1 + length(T).
 
 % funcao que retorna o primeiro elemento de uma lista generica,
 % so funciona para listas com pelo menos um elemento. 
-length([H|T])-> H. 
+head([H|T])-> H. 
 
 
-% funcao que retorna a lista depois de atualizar o resultado 
-% e susbtituir esse elemento pelo pretendido
+% funcao que retorna a lista atualizando o nivel se o jogador
+% ja estiver na lista. 
+% caso nao esteja, substitui o primeiro jogador pelo recebido.
 replace([],E)-> [];
 replace([H|T],E)-> case replace_aux([H|T],E,[],0) of
                        {0,List}->[E|T];
@@ -203,18 +204,22 @@ loop(Map,List) ->
                     % username -> [Password , online, level]
                     % acrescentar 1 ao nivel do jogador. 
                         % se o top tiver menos que 3 jogadores, 
-                        % independente do nivel, vai para a lista de tops
+                        % independente do nivel, vai para a lista de tops 
+                            % (a nao ser que ja se encontre na lista)
+                            % se ja estiverem mais do que 3, mas se tiver
+                            % nivel superior ao com nivel infeiror, é trocado por ele.
+                            % replace verifica primeiro se está, se tiver troca,
+                            % so se nao estiver é que acrescenta à cabeça da lista.
+                            %
+                            %........  NOTA !!!............................................
+                            %
+                            %  se replace for só usado aqui, é mais eficiente se adicionar 
+                            %  logo no sitio certo e depois ja nao se fazer sort.
                         if
-                            ( length(List) < 3 )-> 
-                                if 
-                                    (element_in_list(List,U))->
-                                        loop((maps:put(User,{P,true,X+1),Map),lists:lists:keysort(2, lists:append(List,[{U,X+1}])));
-                                end;
-                            % corresponde ao else
-                            true-> if 
-                                   ( X+1 > element(2,head(List)) )->
-                                        loop((maps:put(User,{P,true,X+1),Map),lists:lists:keysort(2, lists:append(List,[{U,X+1}])));
+                            ( length(List) < 3 or X+1 > element(2,head(list)) )-> 
+                                loop((maps:put(User,{P,true,X+1),Map),lists:lists:keysort(2, replace(List,{U,X+1})));
                                             
+                        end;
             % qualquer outro caso é enviado uma mensagem de erro
             _->
                 From ! {invalid, ?MODULE},
