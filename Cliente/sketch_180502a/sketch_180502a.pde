@@ -23,19 +23,21 @@ class player extends Obj{
   public int number;
   public int ink;
   public float angle;
+  public boolean switch1;
   
   player(int x, int y, String s, int n){
     super(x,y,s,1);
     angle = 0;
     ink = 300;
     number = n;
+    switch1=false;
   }
   void display(){ //<>//
-    if(keyboard[0] == true && number == 0){ink -= 1;speed=6;}else{speed=3;}
-    if(keyboard[1] == true && number == 0){angle-=0.07;}
-    if(keyboard[2] == true && number == 0){angle+=0.07;}
+    if(keyboard[1] == true && number == 0){angle-=0.07;switch1=true;}
+    if(keyboard[2] == true && number == 0){angle+=0.07;switch1=true;}
+    if(keyboard[0] == true && number == 0){vector=(vector.add(PVector.fromAngle(angle))).setMag(speed);ink -= 1;if(switch1){speed=2;switch1=false;}else{speed+=0.3;};}
+
     
-    vector=(vector.add(PVector.fromAngle(angle))).setMag(speed);
     coords.add(vector);
     
     if(ink > 0){
