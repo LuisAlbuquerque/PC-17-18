@@ -3,12 +3,14 @@ import java.awt.event.KeyEvent;
 abstract class Obj {
   
   public PVector coords;
+  public PVector vector;
   public PImage image;
   public float speed;
   
   Obj(int x, int y,String s,float sp){
     coords = new PVector(x, y);
     image = loadImage(s);
+    vector= new PVector(0,0);
     speed = sp;
   }
   
@@ -29,9 +31,12 @@ class player extends Obj{
     number = n;
   }
   void display(){ //<>//
-    if(keyboard[0] == true && number == 0){coords.add(((PVector.fromAngle(angle)).setMag(speed)).limit(16)); ink -= 1;speed+=1;}else{speed=1;}
-    if(keyboard[1] == true && number == 0){angle-=0.1;}
-    if(keyboard[2] == true && number == 0){angle+=0.1;} //<>//
+    if(keyboard[0] == true && number == 0){ink -= 1;speed=6;}else{speed=3;}
+    if(keyboard[1] == true && number == 0){angle-=0.07;}
+    if(keyboard[2] == true && number == 0){angle+=0.07;}
+    
+    vector=(vector.add(PVector.fromAngle(angle))).setMag(speed);
+    coords.add(vector);
     
     if(ink > 0){
       //vida
@@ -59,11 +64,27 @@ class player extends Obj{
 
 class enemy extends Obj{
   
+  //public float angle = 0;
+  
   enemy(){
     super(int(random(0,800)),int(random(0,600)),"enemy2.png",random(0,20));
   }
+  enemy(int x, int y){
+        super(x,y,"enemy2.png",random(0,20));
+  }
+  
+  
   void display(){
-      pushMatrix();
+      if(coords.dist(objects[0].coords)>coords.dist(objects[1].coords)){ //<>//
+        float angle = PVector.angleBetween(coords, objects[1].coords); //<>//
+        if (coords.y > objects[1].coords.y) { angle = angle + 2*(PI-angle); } //<>//
+        coords.add(((PVector.fromAngle(angle).setMag(speed)))); //<>//
+      }else{
+        float angle = PVector.angleBetween(coords, objects[0].coords);
+        if (coords.y > objects[0].coords.y) { angle = angle + 2*(PI-angle); }
+        coords.add(((PVector.fromAngle(angle).setMag(speed))));
+      }
+      pushMatrix(); //<>//
       translate(coords.x,coords.y);
       image(image,0,0,40,40);
       popMatrix();
@@ -74,6 +95,9 @@ class inkOrb extends Obj{
   
   inkOrb(){
     super(int(random(0,800)),int(random(0,600)),"ink2.png",0);
+  }
+  inkOrb(int x, int y){
+    super(x,y,"ink2.png",0);
   }
   void display(){
       pushMatrix();
@@ -89,8 +113,8 @@ boolean[] keyboard= {false,false,false};
 
 
 void setup(){
-  size(1920, 1080);
-  background=loadImage("background4.jpg");
+  size(1280, 720);
+  background=loadImage("background.jpg");
   objects[0]=new player(500,300,"Canada.png",0);
   objects[1]=new player(700,300,"portugal.png",1);
   objects[2]=new enemy();
