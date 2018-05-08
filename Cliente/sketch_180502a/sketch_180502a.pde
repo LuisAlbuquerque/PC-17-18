@@ -35,7 +35,7 @@ class player extends Obj{
   void display(){ //<>//
     if(keyboard[1] == true && number == 0){angle-=0.07;switch1=true;}
     if(keyboard[2] == true && number == 0){angle+=0.07;switch1=true;}
-    if(keyboard[0] == true && number == 0){vector=(vector.add(PVector.fromAngle(angle))).setMag(speed);ink -= 1;if(switch1){speed=2;switch1=false;}else{speed+=0.3;};}
+    if(keyboard[0] == true && number == 0){vector=(vector.add((PVector.fromAngle(angle))).setMag(speed));ink -= 1;if(switch1){speed=2;switch1=false;}else{speed+=0.3;};}
 
     
     coords.add(vector);
