@@ -14,6 +14,8 @@ abstract class Obj {
     speed = sp;
   }
   
+
+  
   //abstract void move(int x);
   abstract void display();
 }
@@ -24,21 +26,30 @@ class player extends Obj{
   public int ink;
   public float angle;
   public boolean switch1;
+  public PVector aceleration;
   
   player(int x, int y, String s, int n){
-    super(x,y,s,1);
+    super(x,y,s,0.1);    
+    aceleration= new PVector(0,0);
     angle = 0;
     ink = 300;
     number = n;
     switch1=false;
   }
+  void update (){
+    if(keyboard[0] == true && number == 0)
+      aceleration = PVector.fromAngle(angle);
+    aceleration.setMag(speed);
+    vector.add(aceleration);
+    coords.add(vector);
+  }
+  
   void display(){ //<>//
     if(keyboard[1] == true && number == 0){angle-=0.07;switch1=true;}
     if(keyboard[2] == true && number == 0){angle+=0.07;switch1=true;}
-    if(keyboard[0] == true && number == 0){vector=(vector.add((PVector.fromAngle(angle))).setMag(speed));ink -= 1;if(switch1){speed=2;switch1=false;}else{speed+=0.3;};}
+    if(keyboard[0] == true && number == 0){ink-=1;if(switch1){speed=0.05;switch1=false;}else{speed=0.08;};}
 
-    
-    coords.add(vector);
+    update();
     
     if(ink > 0){
       //vida
