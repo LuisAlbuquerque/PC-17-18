@@ -28,11 +28,13 @@ PImage gameOver;
 import java.awt.event.KeyEvent;
 
 void setup(){
-  size(1920, 1080);
+  size(displayWidth, displayHeight);
   background=loadImage("background4.jpg");
+  background.resize(displayWidth, displayHeight);
   player1=loadImage("Canada.png");
   player2=loadImage("portugal.png");
-  gameOver= loadImage("GameOver.jpg");
+  gameOver= loadImage("GameOver2.jpg");
+  gameOver.resize(displayWidth, displayHeight);
   v1 = new PVector(40, 20);
   v2 = new PVector(25, 50);
 }

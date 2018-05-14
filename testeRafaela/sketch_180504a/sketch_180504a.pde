@@ -3,7 +3,9 @@
 final int stateGame=0;
 final int stateMenu = 1;
 final int tamanho = 2;
-final int stateHelp = 3;  // when he hits F1 
+final int stateHelpM = 3;  // when he hits x
+final int stateHelpJ = 4;
+final int stateNovoJ = 5;
 
 float mx1 = 200;
 float my1 = 150;
@@ -11,6 +13,9 @@ float mx2 = 200;
 float my2 = 250;
 float mx3 = 200;
 float my3 = 350;
+float mx4 = 200;
+float my4 = 450;
+
 
 float tx1 = 180;
 float ty1 = 125;
@@ -68,19 +73,21 @@ Minim minim;
 SoundFile file;
 
 void setup(){
-  size(800, 600);
-  surface.setResizable(true);
+  size(displayWidth, displayHeight);
   background=loadImage("background4.jpg");
+  background.resize(displayWidth, displayHeight);
   player1=loadImage("Canada.png");
   player2=loadImage("portugal.png");
-  gameOver= loadImage("GameOver.jpg");
+  gameOver= loadImage("GameOver2.jpg");
+  gameOver.resize(displayWidth, displayHeight);
+ 
   v1 = new PVector(40, 20);
   v2 = new PVector(25, 50);
   
   //musica
   minim = new Minim(this);
   song = minim.loadFile("starWars.mp3", 5048);
-  song.play();
+  song.loop();
   
 }
 void draw () { 
@@ -96,11 +103,17 @@ void draw () {
   case tamanho:
     drawStateTamanho();
     break; 
-  case stateHelp:
+  case stateHelpM:
     drawForStateHelp();
-    break;  
+    break; 
+  case stateHelpJ:
+    drawForStateHelpJ();
+    break; 
   case stateMenu:
     drawForStateMenu();
+    break; 
+ case stateNovoJ:
+    drawForStateNovoJ();
     break; 
   default:
     // error 
@@ -113,6 +126,18 @@ void draw () {
 void drawForStateGame() {
   background (background);
   display();
+}
+
+void drawForStateNovoJ() {
+ fill(255);
+  rect(mx1,my1,mw,mh);
+  fill(0);
+  text(" Novo Jogo ", 230, 200);
+  fill(255);
+   rect(mx2,my2,mw,mh);
+  fill(0);
+  text(" Sair ", 230, 300);
+  fill(255);
 }
 
 void drawForStateHelp() {
@@ -128,44 +153,60 @@ void drawForStateHelp() {
   textSize(10);
   text("Clique x para voltar ao menu",20,300);
 }
+
+void drawForStateHelpJ() {
+  text("Teclas:", 20, 100);
+  text("Criaturas:",20,210);
+  textSize(18);
+  text("As setas esquerda e direita provocam aceleração angular, na direcção respectiva, a seta", 20,120);
+  text("para a frente provoca aceleração linear na direcção para onde está voltado o jogador.", 20,140);
+  text("Cada propulsor gasta energia enquanto está a ser actuado;", 20, 160);
+  text("As baterias são carregadas lentamente.", 20, 180);
+  text("As criaturas verdes quando capturadas dão energia, até ao máximo da bateria.",20,230);
+  text("As criaturas vermelhas, aparecem a cada 10 segundos numa posição aleatória.",20,250); 
+  textSize(10);
+  text("Clique F1 para voltar ao menu",20,300);
+}
+
 void drawStateTamanho(){
   text("Escolha o tamanho da janela", 200, 100);
   text("  640x480 ", 200, 150);
-  text("  800x600 ", 200, 200);
-  text("  1366x768 ", 200, 250);
+  text("  800x600", 200, 200);
+  
   
    fill(255, 69,0);
    rect(tx1,ty1,tw,th);
    rect(tx2,ty2,tw,th);
-   rect(tx3,ty3,tw,th);
+   
 }
 
 void drawForStateMenu() {
   text("MENU", 200, 100);
+  
   fill(255);
- 
-  rect(mx1,my1,mw,mh);
+   rect(mx1,my1,mw,mh);
   fill(0);
   text(" Jogar ", 230, 200);
   fill(255);
-  rect(mx2,my2,mw,mh);
+   rect(mx2,my2,mw,mh);
   fill(0);
-  text(" Sair ", 230, 300);
+  text(" Opções ", 230, 300);
   fill(255);
   rect(mx3,my3,mw,mh);
   fill(0);
-  text(" Ajuda ", 230, 400);
+  text(" Sair ", 230, 400);
+  fill(255);
+  rect(mx4,my4,mw,mh);
+  fill(0);
+  text(" Ajuda ", 230, 500);
   
 }
 void tamanhoB(int a, int b){
-        surface.setSize(a,b);
-        image(background, 0,0);
-        background.resize(a, b);
-        image(background, 0,0);
         
-        image(gameOver, 0,0);
+        surface.setSize(a,b);
+        background.resize(a, b);   
         gameOver.resize(a, b);
-        image(gameOver, 0,0);
+      
 }
 
 //-----------------------------------------------------------------------------------------//
@@ -211,11 +252,11 @@ void jogador2(){
 }
 
 void display(){
-  if(keyboard[0] == true){v1.add((PVector.fromAngle(angle1)).setMag(10)); energia -= 0.5;}
+  if(keyboard[0] == true){v1.add((PVector.fromAngle(angle1)).setMag(5)); energia -= 0.1;}
   if(keyboard[1] == true){angle1-=0.05;}
   if(keyboard[2] == true){angle1+=0.05;}
   
-  if(keyboard[3] == true){v2.add((PVector.fromAngle(angle2)).setMag(10)); energia2 -= 0.5;}
+  if(keyboard[3] == true){v2.add((PVector.fromAngle(angle2)).setMag(5)); energia2 -= 0.1;}
   if(keyboard[4] == true){angle2-=0.05;}
   if(keyboard[5] == true){angle2+=0.05;}
 
@@ -246,18 +287,22 @@ void keyPressed() {
         
       if (keyCode==java.awt.event.KeyEvent.VK_F1) {
       // F1
-        state =  stateHelp;
+        state =  stateHelpJ;
       } 
+      
     break;
     
-    case stateHelp:
+    case stateHelpM:
       if (key=='x') {
         state = stateMenu;
       }
+      break; 
+      
+    case stateHelpJ:
       if (keyCode==java.awt.event.KeyEvent.VK_F1) {
-        state = stateGame;
+       state = stateGame;
       }
-      break;  
+      break; 
   
      default:
        break;
@@ -281,62 +326,56 @@ void mousePressed() {
   switch(state){
     case stateMenu:
        if(mouseX>mx1 && mouseX <mx1+mw && mouseY>my1 && mouseY <my1+mh){
-        state = tamanho;
-        println("The mouse is pressed the button jogar"); 
+          state = stateGame;
+          println("The mouse is pressed the button jogar"); 
       }
       if(mouseX>mx2 && mouseX <mx2+mw && mouseY>my2 && mouseY <my2+mh){
-       exit();
-       println("The mouse is pressed the button sair"); 
+       state = tamanho;
+       println("The mouse is pressed the button Opção"); 
       }
       if(mouseX>mx3 && mouseX <mx3+mw && mouseY>my3 && mouseY <my3+mh){
-       state = stateHelp;
-       println("The mouse is pressed the button ajuda"); 
+       exit();
+       println("The mouse is pressed the button Sair"); 
       }
+      if(mouseX>mx4 && mouseX <mx4+mw && mouseY>my4 && mouseY <my4+mh){
+       state = stateHelpM;
+       println("The mouse is pressed the button Sair"); 
+      }
+     break;
       
      case tamanho:
        if(mouseX>tx1 && mouseX <tx1+tw && mouseY>ty1 && mouseY <ty1+th){
          int a = 640; int b = 480;
-        surface.setSize(a,b);
-        image(background, 0,0);
-        background.resize(a, b);
-        image(background, 0,0);
-        
-        image(gameOver, 0,0);
-        gameOver.resize(a, b);
-        image(gameOver, 0,0);
-        state = stateGame;
+         tamanhoB( a,  b);
+          state = stateGame;
         
         println("The mouse is pressed the button 1"); 
       }
       if(mouseX>tx2 && mouseX <tx2+tw && mouseY>ty2 && mouseY <ty2+th){
-        int a = 800; int b = 600;
-        surface.setSize(a,b);
-        image(background, 0,0);
-        background.resize(a, b);
-        image(background, 0,0);
-        
-        image(gameOver, 0,0);
-        gameOver.resize(a, b);
-        image(gameOver, 0,0);
-        state = stateGame;
-        state = stateGame;
-       
+         int a = 800; int b = 600;
+         tamanhoB(a,  b);
+         state = stateGame;
        println("The mouse is pressed the button 2"); 
       }
-      if(mouseX>tx3 && mouseX <tx3+tw && mouseY>ty3 && mouseY <ty3+th){
-        int a = 1366; int b = 768;
-        surface.setSize(a,b);
-        image(background, 0,0);
-        background.resize(a, b);
-        image(background, 0,0);
-        
-        image(gameOver, 0,0);
-        gameOver.resize(a, b);
-        image(gameOver, 0,0);
-        state = stateGame;
-
-       println("The mouse is pressed the button 3"); 
+      break;
+      case stateNovoJ:
+       if(mouseX>mx1 && mouseX <mx1+mw && mouseY>my1 && mouseY <my1+mh){
+          state = stateGame;
+          println("The mouse is pressed the button jogar"); 
       }
+      if(mouseX>mx2 && mouseX <mx2+mw && mouseY>my2 && mouseY <my2+mh){
+       state = tamanho;
+       println("The mouse is pressed the button Opção"); 
+      }
+      if(mouseX>mx3 && mouseX <mx3+mw && mouseY>my3 && mouseY <my3+mh){
+       exit();
+       println("The mouse is pressed the button Sair"); 
+      }
+      if(mouseX>mx4 && mouseX <mx4+mw && mouseY>my4 && mouseY <my4+mh){
+       state = stateHelpM;
+       println("The mouse is pressed the button Sair"); 
+      }
+     break;
   }
 }
 
