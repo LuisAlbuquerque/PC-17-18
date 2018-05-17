@@ -60,9 +60,6 @@ void draw() {
    else if (state == stateRecuperarC){
      drawForStateRecuperarC();
    }
-   else if (state == stateOpcoes){
-     drawForStateRecuperarC();
-   }
    else if (state == statePlay){
      drawForStatePlay();
    }
@@ -71,6 +68,9 @@ void draw() {
    }
    else if (state == stateHelp){
      drawForStateHelp();
+   }
+   else if (state == stateOpcoes){
+     drawForStateOpcoes();
    }
  
 }
@@ -110,6 +110,7 @@ void mousePressed() {
    for (Caixa t : caixas) {
      if (t.overBox(mouseX, mouseY)){
        switch(state){
+         
          case stateMenu: 
            if (t == caixas.get(0)){
              state=stateLogin;
@@ -117,17 +118,27 @@ void mousePressed() {
            else if (t == caixas.get(1)){
              state=stateCreateC;
            }
-           else if (t == caixas.get(3)){
+           else if (t == caixas.get(2)){
              exit();
            }
            break;
          
          case stateLogin:
-           if (t == caixas.get(4)){
+           if (t == caixas.get(3)){
              state=stateRecuperarC;
            }
            else if (t == caixas.get(9)){
              state=stateMenu;
+           }
+           
+           else if (t == caixas.get(12)){
+             if (textboxes.get(0).KEYPRESSED(key, (int)keyCode)) {
+                 Submit();
+            }
+             if (textboxesP.get(0).KEYPRESSED(key, (int)keyCode)) {
+               Submit();
+            }
+             if (logged==0) state=statePlay;
            }
            break;
         
@@ -147,7 +158,7 @@ void mousePressed() {
           if (t == caixas.get(5)){
              state=stateJogar;
           }
-          else if (t == caixas.get(2)){
+          else if (t == caixas.get(4)){
              state=stateOpcoes;
           }
           else if (t == caixas.get(6)){
@@ -160,23 +171,52 @@ void mousePressed() {
             exit();
           }
           break;
+          
+        case stateOpcoes:
+           if (t == caixas.get(10)){
+             resizes(800,600);
+           }
+           else if (t == caixas.get(11)){
+             resizes(1200,800);
+           }
+           else  if (t == caixas.get(9)){
+               state=statePlay;
+           }
+           break;
+           
+        case stateHelp:
+          if (t == caixas.get(9)){
+               state=statePlay;
+           }
+           break;
        }
      }      
    }
 }
 
 
-void keyPressed() {
-   for (TEXTBOX t : textboxes) {
-      if (t.KEYPRESSED(key, (int)keyCode)) {
+void keyPressed(){
+  
+  if (state==stateLogin){
+       if (textboxes.get(0).KEYPRESSED(key, (int)keyCode)) {
+         Submit();
+      }
+       if (textboxesP.get(0).KEYPRESSED(key, (int)keyCode)) {
          Submit();
       }
    }
-   for (TEXTBOXP t : textboxesP) {
-      if (t.KEYPRESSED(key, (int)keyCode)) {
+   if (state==stateCreateC){
+       if (textboxes.get(1).KEYPRESSED(key, (int)keyCode)) {
+         Submit();
+      }
+       if (textboxesP.get(1).KEYPRESSED(key, (int)keyCode)) {
+         Submit();
+      }
+      if (textboxes.get(2).KEYPRESSED(key, (int)keyCode)) {
          Submit();
       }
    }
+   
    if (state==stateJogar){
      if(key == 'w'){keyboard[0]=true;}
      if(key == 'a'){keyboard[1]=true;}
