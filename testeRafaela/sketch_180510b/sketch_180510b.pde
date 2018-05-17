@@ -20,8 +20,8 @@ final int stateJogar= 6;
 final int stateRanking= 7;
 final int stateHelp= 8;
 
-int state= stateMenu; 
-
+//int state= stateMenu; 
+int state= statePlay; 
 // variaveis caixas
 
 int mw=200;

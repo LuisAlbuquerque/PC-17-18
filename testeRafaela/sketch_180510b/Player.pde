@@ -32,7 +32,16 @@ class player extends Obj{
 
     update();
     
-    if(ink > 0){
+    if(PVector.dist(coords,objects[4].coords)<30){
+      ink = 300;
+      objects[4].remove();
+    }
+    if(PVector.dist(coords,objects[5].coords)<30){
+      ink = 300;
+      objects[5].remove();
+    }
+    
+    if(ink > 0 && 0<coords.x && coords.x<displayWidth && 0<coords.y && coords.y<displayHeight && PVector.dist(coords,objects[2].coords)>30 && PVector.dist(coords,objects[3].coords)>30){
       //vida
       image(image,450*number,0,50,50);
       fill(200,0,0);
@@ -47,6 +56,7 @@ class player extends Obj{
       tint(255, 255);
       popMatrix();
   }else{
+    remove();
     PFont font;
     font = createFont("Georgia Bold", 60);
     textFont(font);
