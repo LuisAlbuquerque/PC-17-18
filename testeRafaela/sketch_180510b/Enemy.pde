@@ -3,10 +3,10 @@ class enemy extends Obj{
   //public float angle = 0;
   
   enemy(){
-    super(int(random(0,displayWidth)),int(random(0,displayHeight)),"enemy2.png",4);
+    super(int(random(0,displayWidth)),int(random(0,displayHeight)),"enemy.png",4);
   }
   enemy(int x, int y){
-        super(x,y,"enemy2.png",random(0,20));
+        super(x,y,"enemy.png",random(0,20));
   }
   
   
@@ -22,7 +22,7 @@ class enemy extends Obj{
       }
       pushMatrix();
       translate(coords.x,coords.y);
-      image(image,0,0,40,40);
+      image(image,0,0,50,50);
       popMatrix();
   }
 }
