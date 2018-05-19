@@ -9,6 +9,7 @@ ArrayList<TEXTBOXP> textboxesP = new ArrayList<TEXTBOXP>();
 ArrayList<Caixa> caixas = new ArrayList<Caixa>();
 int logged = 2; // 0 para login, 1 para failed, e 2 para enquanto nao clica enter
 int create = 2; // 0 creado para sucesso, 1 para já existe o username, e 2 para enquanto nao clica enter
+int switchBackground = 1;
 //estados
 final int stateMenu = 0;
 final int stateLogin = 1;
@@ -34,7 +35,8 @@ int my4= 300;
 
 void setup() {
    size(displayWidth, displayHeight);
-   background=loadImage("background.jpg");
+   background=loadImage("menu.png");
+   //background=loadImage("background5.jpg");
    background.resize(displayWidth, displayHeight);
     objects[0]=new player(500,300,"Canada.png",0);
     objects[1]=new player(700,300,"portugal.png",1);
@@ -47,32 +49,37 @@ void setup() {
 
 
 void draw() {
-   background(40, 160, 40);
-    if(state == stateMenu){
-     drawForStateMenu();
+   if(state==stateJogar && switchBackground == 1){
+     background=loadImage("background5.jpg");
+     background.resize(displayWidth, displayHeight);
+     switchBackground=0;
+   }else{
+     if(state!=stateJogar && switchBackground==0){
+       background=loadImage("menu.png");
+       background.resize(displayWidth, displayHeight);
+       switchBackground=1;
+     }
    }
-   else if(state == stateLogin){
-     drawForStateLogin();
+   background (background);
+   switch(state){
+     case stateMenu: drawForStateMenu();
+                     break;
+     case stateLogin: drawForStateLogin();
+                     break;
+     case stateCreateC: drawForStateCreateC();
+                     break;
+     case stateRecuperarC: drawForStateRecuperarC();
+                     break;
+     case statePlay: drawForStatePlay();
+                     break;
+     case stateJogar: drawForStateJogar();
+                      break;
+     case stateHelp: drawForStateHelp();
+                     break;                  
+     case stateOpcoes: drawForStateOpcoes();
+                     break;
+     default : break;
    }
-   else if (state == stateCreateC){
-     drawForStateCreateC();
-   }
-   else if (state == stateRecuperarC){
-     drawForStateRecuperarC();
-   }
-   else if (state == statePlay){
-     drawForStatePlay();
-   }
-   else if (state == stateJogar){
-     drawForStateJogar();
-   }
-   else if (state == stateHelp){
-     drawForStateHelp();
-   }
-   else if (state == stateOpcoes){
-     drawForStateOpcoes();
-   }
- 
 }
    
   
