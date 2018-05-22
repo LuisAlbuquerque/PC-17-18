@@ -104,7 +104,6 @@ void resizes(int x, int y){
 }
 
 void drawForStateJogar(){
-  background (background);
   for(Obj o : objects){
     o.display();
   }

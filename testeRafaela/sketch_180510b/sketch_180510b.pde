@@ -1,5 +1,6 @@
 Obj[] objects= new Obj[6];
 PImage background;
+PImage backgroundJogo;
 boolean[] keyboard= {false,false,false};
 
 
@@ -36,10 +37,11 @@ int my4= 300;
 void setup() {
    size(displayWidth, displayHeight);
    background=loadImage("menu.png");
-   //background=loadImage("background5.jpg");
+   backgroundJogo=loadImage("background5.jpg");
    background.resize(displayWidth, displayHeight);
-    objects[0]=new player(500,300,"Canada.png",0);
-    objects[1]=new player(700,300,"portugal.png",1);
+   backgroundJogo.resize(displayWidth, displayHeight);
+    objects[0]=new player(700,450,"Canada.png",0);
+    objects[1]=new player(1300,450,"portugal.png",1);
     objects[2]=new enemy();
     objects[3]=new enemy();
     objects[4]=new inkOrb();
@@ -49,34 +51,30 @@ void setup() {
 
 
 void draw() {
-   if(state==stateJogar && switchBackground == 1){
-     background=loadImage("background5.jpg");
-     background.resize(displayWidth, displayHeight);
-     switchBackground=0;
-   }else{
-     if(state!=stateJogar && switchBackground==0){
-       background=loadImage("menu.png");
-       background.resize(displayWidth, displayHeight);
-       switchBackground=1;
-     }
-   }
-   background (background);
    switch(state){
-     case stateMenu: drawForStateMenu();
+     case stateMenu: background (background);
+                     drawForStateMenu();
                      break;
-     case stateLogin: drawForStateLogin();
+     case stateLogin: background (background); 
+                     drawForStateLogin();
                      break;
-     case stateCreateC: drawForStateCreateC();
+     case stateCreateC: background (background); 
+                     drawForStateCreateC();
                      break;
-     case stateRecuperarC: drawForStateRecuperarC();
+     case stateRecuperarC: background (background); 
+                     drawForStateRecuperarC();
                      break;
-     case statePlay: drawForStatePlay();
+     case statePlay: background (background);
+                     drawForStatePlay();
                      break;
-     case stateJogar: drawForStateJogar();
+     case stateJogar: background (backgroundJogo);
+                      drawForStateJogar();
                       break;
-     case stateHelp: drawForStateHelp();
+     case stateHelp: background (background);
+                     drawForStateHelp();
                      break;                  
-     case stateOpcoes: drawForStateOpcoes();
+     case stateOpcoes: background (background);
+                     drawForStateOpcoes();
                      break;
      default : break;
    }

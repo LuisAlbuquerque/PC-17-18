@@ -6,11 +6,12 @@ class enemy extends Obj{
     super(int(random(0,displayWidth)),int(random(0,displayHeight)),"enemy.png",4);
   }
   enemy(int x, int y){
-        super(x,y,"enemy.png",random(0,20));
+        super(x,y,"enemy.png",0.0005);
   }
   
   
   void display(){
+    
       if(PVector.dist(coords,objects[0].coords)>PVector.dist(coords,objects[1].coords)){
         vector= new PVector(objects[1].coords.x-coords.x,objects[1].coords.y-coords.y);
         vector.setMag(speed);
@@ -20,6 +21,7 @@ class enemy extends Obj{
         vector.setMag(speed);
         coords.add(vector);
       }
+      
       pushMatrix();
       translate(coords.x,coords.y);
       image(image,0,0,50,50);
