@@ -60,7 +60,8 @@ element_in_list([H|T],E)-> if
                                    element_in_list(T,E)
                            end.
 
-analyze(Data)->Data.
+analyze(Data) when is_binary(Data)->
+    binary_to_list(Data).
 %.......................................................................
 %.......................................................................
                 
@@ -260,31 +261,69 @@ test_collisions(P1,[H|T])->
             test_collisions(P1,T)
     end.
 
+normalize(Vector)->
+    Norma = sqrt(math:power(element(0,Vector)-element(0,Vector),2) + math:power(element(0,Vector)-element(0,Vector),2)), 
+    {element(0,Vector)/Norma, element(1,Vector)/Norma}.
+
+set_magnitude(Vector, Mag)->
+    {X,Y}  = normalize(Vector),
+    {X * Mag, Y * Mag }. 
+
+
 create_vector(Point1, Point2)->
-    [element(0,Point2) - element(0,Point1) | element(1,Point2) - element(1,Point1)].
+    {element(0,Point2) - element(0,Point1) , element(1,Point2) - element(1,Point1)}.
 
 point_plus_vector(Point,Vector)->
-    [element(0,Point) + element(0,Vector) | element(1,Point) + element(1,Vector)].
+    {element(0,Point) + element(0,Vector) , element(1,Point) + element(1,Vector)}.
 
 move_redBall(PosBall, PosJ1, PosJ2)->
     Dist1 = dist(PosBall,PosJ1),
     Dist2 = dist(PosBall,PosJ2),
     if
         ( Dist1 > Dist2 )->
-            point_plus_vector(PosBall,create_vector(PosBall,PosJ2));
+            Vector = create_vector(PosBall,PosJ2),
+            Vector = set_magnitude(Vector,1),
+            point_plus_vector(PosBall,Vector);
         true->
-            point_plus_vector(PosBall,create_vector(PosBall,PosJ1))
+            Vector = create_vector(PosBall,PosJ1),
+            Vector = set_magnitude(Vector,1),
+            point_plus_vector(PosBall,Vector)
     end.
 
 move_redBalls(Red_bals,PosJ1,PosJ2)->
     lists:map(fun(X)-> move_redBall(X,PosJ1,PosJ2) end,Red_bals).
 
-move_player(Move, {X,Y},Energia)->
+move_player_aux(Move, {X,Y}, Energy, Angle, Speed, Aceleration, Switch) ->
     case Move of
-        "w"-> 
-            {{X,Y+1},Energia-1}
+        "a"-> 
+            {{X,Y}, Energy, (Angle -0.07), Speed, Aceleration, true};
+        "d"-> 
+            {{X,Y}, Energy, (Angle +0.07), Speed, Aceleration, true};
+
+        "w" when Switch == true -> 
+            {{X,Y}, Energy - 1, Angle, 0.05, {math:cos(Angle),math:sin(Angle)}, false};
+
+        "w" when Switch == false and Speed < 0.3 -> 
+            {{X,Y}, Energy - 1, Angle, Speed + 0.01, Aceleration, false};
+
+        "w" when Switch == false -> 
+            {{X,Y}, Energy - 1, Angle, Speed, Aceleration, false};
+
+        "wa" -> 
+            {{X,Y}, Energy - 1, (Angle - 0.07), 0.05, {math:cos(Angle-0.07),math:sin(Angle-0.07)}, false};
+
+        "wd" -> 
+            {{X,Y}, Energy - 1, (Angle + 0.07), 0.05, {math:cos(Angle+0.07),math:sin(Angle+0.07)}, false}
     end.
 
+
+move_player(Move, {X,Y}, Energy, Angle, Speed, Aceleration, Switch) ->
+        {{X,Y}, Energy, Angle, Speed , Aceleration, Switch} = move_player_aux(Move, {X,Y}, Energy, Angle, Speed, Aceleration, Switch),
+
+
+            
+
+    
 plus_energy(Energia)-> Energia + 1. 
 
 
