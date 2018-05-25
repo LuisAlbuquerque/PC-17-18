@@ -73,6 +73,7 @@ class player extends Obj{
     textFont(font);
     fill(255,215,0);
     text("Game Over", 10+360*number, 50);
+    state=stateGmov;
     }
   }
 }

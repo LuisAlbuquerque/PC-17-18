@@ -3,7 +3,7 @@ PImage background;
 PImage backgroundJogo;
 boolean[] keyboard= {false,false,false};
 
-
+public int gameover= 1;
 
 ArrayList<TEXTBOX> textboxes = new ArrayList<TEXTBOX>();
 ArrayList<TEXTBOXP> textboxesP = new ArrayList<TEXTBOXP>();
@@ -21,9 +21,10 @@ final int stateOpcoes= 5;
 final int stateJogar= 6;
 final int stateRanking= 7;
 final int stateHelp= 8;
+final int stateGmov=9;
 
-//int state= stateMenu; 
-int state= stateJogar; 
+int state= stateMenu; 
+
 // variaveis caixas
 
 int mw=200;
@@ -69,12 +70,15 @@ void draw() {
                      break;
      case stateJogar: background (backgroundJogo);
                       drawForStateJogar();
+                      if (gameover==0){
+                        state=stateGmov;
+                      }
                       break;
      case stateHelp: background (background);
                      drawForStateHelp();
-                     break;                  
-     case stateOpcoes: background (background);
-                     drawForStateOpcoes();
+                     break;
+     case stateGmov: background (background);
+                     drawForStateGameOver();
                      break;
      default : break;
    }
@@ -97,6 +101,23 @@ void Submit() {
    } else {
          logged = 1;
       }
+}
+
+void Create() {
+   if (!textboxes.get(2).Text.equals("R")) {
+      if (!textboxesP.get(1).Text.equals("1")) {
+        if(!textboxes.get(1).Text.equals("R")){
+          create=0;
+         }
+         else{
+          create = 1;
+        }
+      }else {
+        create = 1;
+       }      
+   }else {
+     create = 1;
+    }
 }
 
 
@@ -131,18 +152,25 @@ void mousePressed() {
          case stateLogin:
            if (t == caixas.get(3)){
              state=stateRecuperarC;
+             textboxes.get(0).nome = "";
+             textboxes.get(0).Text = "";
+             textboxesP.get(0).pass= "";
+             textboxesP.get(0).esconde= "";
+             textboxesP.get(0).Text= "";
+             logged=2;
            }
            else if (t == caixas.get(9)){
              state=stateMenu;
+             textboxes.get(0).nome = "";
+             textboxes.get(0).Text = "";
+             textboxesP.get(0).pass= "";
+             textboxesP.get(0).esconde= "";
+             textboxesP.get(0).Text= "";
+             logged=2;
            }
            
            else if (t == caixas.get(12)){
-             if (textboxes.get(0).KEYPRESSED(key, (int)keyCode)) {
-                 Submit();
-            }
-             if (textboxesP.get(0).KEYPRESSED(key, (int)keyCode)) {
-               Submit();
-            }
+             Submit();
              if (logged==0) state=statePlay;
            }
            break;
@@ -159,7 +187,7 @@ void mousePressed() {
            }
            break;
            
-        case statePlay:  
+        case statePlay:
           if (t == caixas.get(5)){
              state=stateJogar;
           }
@@ -173,24 +201,33 @@ void mousePressed() {
             state=stateHelp;
           }
           else if (t == caixas.get(8)){
-            exit();
+            state=stateMenu;
+            textboxes.get(0).nome = "";
+            textboxes.get(0).Text = "";
+            textboxesP.get(0).pass= "";
+            textboxesP.get(0).esconde= "";
+            textboxesP.get(0).Text= "";
+            logged=2;
           }
           break;
-          
-        case stateOpcoes:
-           if (t == caixas.get(10)){
-             resizes(800,600);
-           }
-           else if (t == caixas.get(11)){
-             resizes(1200,800);
-           }
-           else  if (t == caixas.get(9)){
-               state=statePlay;
-           }
-           break;
            
         case stateHelp:
           if (t == caixas.get(9)){
+               state=statePlay;
+           }
+           break;
+         case stateGmov:
+          if (t == caixas.get(13)){
+               state=stateJogar;
+               objects[0]=new player(500,300,"Canada.png",0);
+               objects[1]=new player(700,300,"portugal.png",1);
+               objects[2]=new enemy();
+               objects[3]=new enemy();
+               objects[4]=new inkOrb();
+               objects[5]=new inkOrb();
+               gameover=1;
+           }
+           else if (t == caixas.get(14)){
                state=statePlay;
            }
            break;
@@ -211,15 +248,21 @@ void keyPressed(){
       }
    }
    if (state==stateCreateC){
-       if (textboxes.get(1).KEYPRESSED(key, (int)keyCode)) {
+       if (textboxes.get(2).KEYPRESSED(key, (int)keyCode)) {
          Submit();
       }
        if (textboxesP.get(1).KEYPRESSED(key, (int)keyCode)) {
          Submit();
       }
-      if (textboxes.get(2).KEYPRESSED(key, (int)keyCode)) {
+      if (textboxes.get(1).KEYPRESSED(key, (int)keyCode)) {
          Submit();
       }
+   }
+   if (state==stateRecuperarC){
+      if (textboxes.get(1).KEYPRESSED(key, (int)keyCode)) {
+         Submit();
+      }
+      
    }
    
    if (state==stateJogar){

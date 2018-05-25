@@ -38,9 +38,9 @@ public class Caixa {
          noStroke();
       }
       
-      fill(255);
+      noFill();
       rect(X, Y, W, H);
-     fill(0); 
+      fill(255); 
       text(title, (X+20) , Y+(H/2)+10);
       
    }
