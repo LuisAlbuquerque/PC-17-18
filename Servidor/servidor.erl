@@ -1,6 +1,6 @@
 -module(servidor).
 -export([start/1]).
--export([move_player/3, play_game/8, head/1,replace_aux/4,replace/2,element_in_list/2]).
+-export([move_player/8, play_game/16, head/1,replace_aux/4,replace/2,element_in_list/2]).
 -export([levelUp/2, spawn_reds/3, spawn_green/3, top3/0]).
 -export([move_redBall/3]).
 
@@ -61,7 +61,8 @@ element_in_list([H|T],E)-> if
                            end.
 
 analyze(Data) when is_binary(Data)->
-    binary_to_list(Data).
+    List = binary_to_list(Data),
+    list_to_tuple(string:split(List,",",all)).
 %.......................................................................
 %.......................................................................
                 
@@ -117,22 +118,20 @@ player(Socket,Info,Flag,Jogo)->
         {tcp, Socket, Data} ->
             %tratar os dados
             case analyze(Data) of
-                {create_accont, Username, Password}-> 
+                {"create_accont", Username, Password}-> 
                     create_accont(Username, Password),
                     player(Socket,[Username|Password],1,Jogo);
-                {login, Username, Password}-> 
+                {"login", Username, Password}-> 
                     login(Username, Password),
                     player(Socket,[Username|Password],1,Jogo);
-                {logout, Username, Password}-> 
+                {"logout", Username, Password}-> 
                     logout(Username, Password);
-                {close_accont, Username, Password}-> 
+                {"close_accont", Username, Password}-> 
                     close_accont(Username, Password);
-                {play, Username, Password}->
+                {"play", Username, Password}->
                     play(Username,Password),
                     player(Socket,[Username|Password],1,Jogo);
-                Tecla->
-                    % ...
-
+                {Tecla,_,_}->
                     Jogo ! {self(),Tecla},
                     player(Socket,Info,1,Jogo)
             end;
@@ -144,7 +143,7 @@ player(Socket,Info,Flag,Jogo)->
                 % por isso nao ha nada a fazer.
                 0-> ok;
                 %atualizar o estado do jogador para OFLINE
-                _-> loop ! {logout(indice(0,Info),indice(1,Info))}
+                _-> ?MODULE ! {logout(indice(0,Info),indice(1,Info))}
             end;
 
         {Play,1}->
@@ -219,13 +218,21 @@ play(Username,Password)->
 %................................................
 %
 %
-spawn_reds(Pid,P1,P2)->
+time_reds(Pid)->
     lib_misc:sleep(10),
+    Pid ! {red,self()},
+    time_reds(Pid).
+
+time_green(Pid)->
+    lib_misc:sleep(10),
+    Pid ! {green,self()},
+    time_green(Pid).
+
+spawn_reds(Pid,P1,P2)->
     POS = generate_pos(P1,P2),
     Pid !{red_bals, element(0,POS),element(1,POS)}.
 
 spawn_green(Pid,P1,P2)->
-    lib_misc:sleep(10),
     POS = generate_pos(P1,P2),
     Pid !{green_bals, element(0,POS),element(1,POS)}.
 
@@ -276,6 +283,9 @@ create_vector(Point1, Point2)->
 point_plus_vector(Point,Vector)->
     {element(0,Point) + element(0,Vector) , element(1,Point) + element(1,Vector)}.
 
+point_minus_vector(Point,Vector)->
+    {element(0,Point) - element(0,Vector) , element(1,Point) - element(1,Vector)}.
+
 move_redBall(PosBall, PosJ1, PosJ2)->
     Dist1 = dist(PosBall,PosJ1),
     Dist2 = dist(PosBall,PosJ2),
@@ -303,7 +313,7 @@ move_player_aux(Move, {X,Y}, Energy, Angle, Speed, Aceleration, Switch) ->
         "w" when Switch == true -> 
             {{X,Y}, Energy - 1, Angle, 0.05, {math:cos(Angle),math:sin(Angle)}, false};
 
-        "w" when Switch == false and Speed < 0.3 -> 
+        "w" when ((Switch == false) and (Speed < 0.3 ))-> 
             {{X,Y}, Energy - 1, Angle, Speed + 0.01, Aceleration, false};
 
         "w" when Switch == false -> 
@@ -317,20 +327,29 @@ move_player_aux(Move, {X,Y}, Energy, Angle, Speed, Aceleration, Switch) ->
     end.
 
 
-move_player(Move, {X,Y}, Energy, Angle, Speed, Aceleration, Switch) ->
+move_player(Move, {X,Y}, Energy, Angle, Speed, Aceleration, Switch, {X2,Y2}) ->
         {{X,Y}, Energy, Angle, Speed , Aceleration, Switch} = move_player_aux(Move, {X,Y}, Energy, Angle, Speed, Aceleration, Switch),
-
-
-            
+        Aceleration = set_magnitude(Aceleration,Speed),
+        Angle_aux = math:atan2((Y2-Y), (X2-X)),
+        Vector_aux =  {math:cos(Angle_aux),math:sin(Angle_aux)},
+        Dist = dist( {X,Y},{X2,Y2}),
+        Vector_aux = set_magnitude(Vector_aux,(1000/math:power(Dist))),
+        {X,Y} = point_minus_vector(point_plus_vector({X,Y},Aceleration),Vector_aux),
+        {{X,Y}, Energy, Angle, Speed , Aceleration, Switch}.
 
     
 plus_energy(Energia)-> Energia + 1. 
 
+init_game(Player1,Player2)->
+    Pid = spawn(fun()->play_game(Player1, Player2,{0,0},{0,0},100,100,[],[],0,0,0,0,0,0,true,true)end),
+    spawn(fun()->time_reds(Pid)end),
+    spawn(fun()->time_green(Pid)end).
 
-play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals)->
+play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2)->
     receive
         {Player1,Move}->
-            Pos1 = move_player(Move,Pos1,E1),
+
+            {Pos1, E1, Angle1, Speed1 , Aceleration1, Switch1} = move_player_aux(Move, Pos1, E1, Angle1, Speed1, Aceleration1, Switch1),
             Red = test_collisions(Pos1,Red_bals), 
             if 
             ( Red )->
@@ -344,15 +363,13 @@ play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals)->
                             Green_bals = lists:delete(Pos,Green_bals),
                             Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals},
                             Player2 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals},
-                            play_game(Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals);
+                            play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
                         true->
 
                             T1 = indice(0,Pos1),
                             T2 = indice(1,Pos1),
-                            T3 = indice(0,Pos1),
-                            T4 = indice(1,Pos1),
                             if
-                                ( (T1  > 100) or (T2 > 100) or (T3 < 0) or (T4 < 0) )->
+                                ( (T1  > 100) or (T2 > 100) or (T1 < 0) or (T2 < 0) )->
                                     Player1 ! {game_over},
                                     Player2 ! {win};
                                 true->
@@ -362,7 +379,7 @@ play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals)->
                     end
             end;
         {Player2,Move}->
-            Pos2 = move_player(Move,Pos2,E2),
+            {Pos2, E2, Angle2, Speed2 , Aceleration2, Switch2} = move_player_aux(Move, Pos2, E2, Angle2, Speed2, Aceleration2, Switch2),
             T = test_collisions(Pos2,Red_bals), 
             if 
             ( T )->
@@ -376,15 +393,12 @@ play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals)->
                             Green_bals = lists:delete(Pos,Green_bals),
                             Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals},
                             Player2 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals},
-                            play_game(Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals);
-
+                            play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
                         true->
                             T1 = indice(0,Pos2),
                             T2 = indice(1,Pos2),
-                            T3 = indice(0,Pos2),
-                            T4 = indice(1,Pos2),
                             if
-                                ( (T1  > 100) or (T2 > 100) or (T3 < 0) or (T4 < 0) )->
+                                ( (T1  > 100) or (T2 > 100) or (T1 < 0) or (T2 < 0) )->
                                     Player2 ! {game_over},
                                     Player1 ! {win};
                                 true->
@@ -399,8 +413,15 @@ play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals)->
 
         {red_bals,X,Y}->
             Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,lists:append([[X|Y]],Red_bals),Green_bals},
-            Player2 ! {Player1,Player2,Pos1,Pos2,E1,E2,lists:append([[X|Y]],Red_bals),Green_bals}
-        end.
+            Player2 ! {Player1,Player2,Pos1,Pos2,E1,E2,lists:append([[X|Y]],Red_bals),Green_bals};
+
+        {red,_}->
+           spawn(fun()-> spawn_reds(self(),Pos1,Pos2) end);
+
+        {green,_}->
+            spawn(fun()-> spawn_green(self(),Pos1,Pos2) end)
+            end.
+
 
 
 %
@@ -535,45 +556,45 @@ loop(Map,Level,List,Pids) ->
         end;
     % top3...............................
     % 
-    %receive {top3,_,_,From}->
+    receive {top3,_}->
+        Msg = list_to_binary(string:join(lists:map(fun(X)-> element(1,X) end,List),",")),
+        Msg2 = list_to_binary(string:join(lists:map(fun(X)-> integer_to_list(element(2,X)) end,List),",")),
+        LPids = maps:keys(Pids),
+        [Pid ! {top3,Msg,Msg2} || Pid <- LPids];
+
         % funcao que envia para o jogador o top 3 de jogadores com mais nivel, e os seus usernames. 
-%        case maps:: find(U,Map) of
-%            {ok,{P,_,X}} -> From ! {ok, ?MODULE},
-%                    % username -> [Password , online, level]
-%                    % acrescentar 1 ao nivel do jogador. 
-%                    loop(maps:put(User,{P,true,X+1),Map);
-%            % qualquer outro caso é enviado uma mensagem de erro
-%            _->
-%                From ! {invalid, ?MODULE},
-%                    loop(Map)
-%    end.
     receive {play,U,P,From}->
         case maps:find(U,Map) of
             {ok,{P,_,X}} -> From ! {ok, ?MODULE},
                 case find(X,Level) of
                     {ok,L} when length(L)>0 -> 
-                        spawn( fun()-> play_game(From,indice(1,L)) end),
+                        spawn( fun()-> init_game(From,indice(1,L)) end),
                         loop(Map,Level,List,Pids);
 
                     _-> case find(X+1,Level) of
                         {ok,L} when length(L)>0 -> 
-                            spawn( fun()-> play_game(From,indice(1,L)) end),
+                            spawn( fun()-> init_game(From,indice(1,L)) end),
                             loop(Map,Level,List,Pids);
 
                         _-> case find(X-1,Level) of
                             {ok,L} when length(L)>0 -> 
-                                spawn( fun()-> play_game(From,indice(1,L)) end),
+                                spawn( fun()-> init_game(From,indice(1,L)) end),
                                 loop(Map,Level,List,Pids);
 
                             _-> loop(Map,put([X],From,Level),List,Pids)
-                            end
                         end
                 end
         end.
 
+time_top(Pid)->
+    lib_misc:sleep(100),
+    Pid ! {top3,self()},
+    time_top(Pid).
+
 start(Port)->
     start_server(Port),
     Pid = spawn(fun() -> loop(#{},#{},[],#{}) end),
+    time_top(Pid),
     register(?MODULE,Pid).
 
 
