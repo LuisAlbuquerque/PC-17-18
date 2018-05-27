@@ -152,6 +152,12 @@ player(Socket,Info,Flag,Jogo)->
             player(Socket,Info,Flag,Jogo);
 
         {Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals}->
+%            Data = integer_to_list(element(1,Pos1)) ++"," ++
+%                   integer_to_list(element(2,Pos1)) ++"," ++
+%                   integer_to_list(E1)) ++"," ++
+%                   integer_to_list(E2)) ++"," ++
+%                   integer_to_list(E1)) ++"," ++
+%                    
             Data = binary_to_term(Player1),
             gen_tcp:send(Socket, Data),
             Data = binary_to_term(Player2),
@@ -168,6 +174,10 @@ player(Socket,Info,Flag,Jogo)->
             gen_tcp:send(Socket, Data),
             Data = binary_to_term(Green_bals),
             gen_tcp:send(Socket, Data),
+            player(Socket,Info,Flag,Jogo);
+        
+        {top3,Data}->
+            gen_tcp:send(Socket,Data),
             player(Socket,Info,Flag,Jogo)
     end.
 
@@ -557,10 +567,9 @@ loop(Map,Level,List,Pids) ->
     % top3...............................
     % 
     receive {top3,_}->
-        Msg = list_to_binary(string:join(lists:map(fun(X)-> element(1,X) end,List),",")),
-        Msg2 = list_to_binary(string:join(lists:map(fun(X)-> integer_to_list(element(2,X)) end,List),",")),
+        Msg = list_to_binary(string:join(lists:map(fun(X)-> element(1,X) ++" "++ integer_to_list(element(2,X)) end,List),",")),
         LPids = maps:keys(Pids),
-        [Pid ! {top3,Msg,Msg2} || Pid <- LPids];
+        [Pid ! {top3,Msg} || Pid <- LPids];
 
         % funcao que envia para o jogador o top 3 de jogadores com mais nivel, e os seus usernames. 
     receive {play,U,P,From}->
