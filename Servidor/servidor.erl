@@ -1,6 +1,6 @@
 -module(servidor).
 -export([start/1]).
--export([move_player/8, play_game/16, head/1,replace_aux/4,replace/2,element_in_list/2]).
+-export([move_player/8, play_game/17, head/1,replace_aux/4,replace/2,element_in_list/2]).
 -export([levelUp/2, spawn_reds/3, spawn_green/3, top3/0]).
 -export([move_redBall/3]).
 
@@ -101,6 +101,14 @@ analyze(Data) when is_binary(Data)->
 %    spawn(fun()->acceptor(Lsock,Room) end),
 %    Room ! {enter, self()},
 %    user(Sock,Room).
+%    
+%
+listPoint_to_list([])-> "";
+listPoint_to_list([Point|CPoint])->
+        integer_to_list(element(1,Point)) ++"," ++
+               integer_to_list(element(2,Point)) ++"," ++
+               listPoint_to_list(CPoint).
+
 
 %..................................
 %
@@ -142,7 +150,7 @@ player(Socket,Info,Flag,Jogo)->
                 % ainda nao ha nelhum restito do jogador
                 % por isso nao ha nada a fazer.
                 0-> ok;
-                %atualizar o estado do jogador para OFLINE
+                %atualizar o estado do jogador para OFFLINE
                 _-> ?MODULE ! {logout(indice(0,Info),indice(1,Info))}
             end;
 
@@ -151,34 +159,36 @@ player(Socket,Info,Flag,Jogo)->
             gen_tcp:send(Socket, Data),
             player(Socket,Info,Flag,Jogo);
 
-        {Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals}->
-%            Data = integer_to_list(element(1,Pos1)) ++"," ++
-%                   integer_to_list(element(2,Pos1)) ++"," ++
-%                   integer_to_list(E1)) ++"," ++
-%                   integer_to_list(E2)) ++"," ++
-%                   integer_to_list(E1)) ++"," ++
-%                    
-            Data = binary_to_term(Player1),
-            gen_tcp:send(Socket, Data),
-            Data = binary_to_term(Player2),
-            gen_tcp:send(Socket, Data),
-            Data = binary_to_term(Pos1),
-            gen_tcp:send(Socket, Data),
-            Data = binary_to_term(Pos2),
-            gen_tcp:send(Socket, Data),
-            Data = binary_to_term(E1),
-            gen_tcp:send(Socket, Data),
-            Data = binary_to_term(E2),
-            gen_tcp:send(Socket, Data),
-            Data = binary_to_term(Red_bals),
-            gen_tcp:send(Socket, Data),
-            Data = binary_to_term(Green_bals),
-            gen_tcp:send(Socket, Data),
+        {_, _,Pos1,Pos2,E1,E2,Red_bals,Green_bals}->
+            Data = integer_to_list(element(1,Pos1)) ++"," ++
+                   integer_to_list(element(2,Pos1)) ++"," ++
+                   integer_to_list(element(1,Pos2)) ++"," ++
+                   integer_to_list(element(2,Pos2)) ++"," ++
+                   integer_to_list(E1) ++"," ++
+                   integer_to_list(E2) ++"," ++
+                   listPoint_to_list(Red_bals) ++","++
+                   listPoint_to_list(Green_bals),
+            Data = list_to_binary(Data),
+            gen_tcp:send(Socket,Data),
             player(Socket,Info,Flag,Jogo);
         
-        {top3,Data}->
+        {top3,Data,Data2}->
+            %<<jogador1 nivel, jogar2 nivel2, jogar3 nivel3>>
+            gen_tcp:send(Socket,Data),
+            %<<jogador1 pontos, jogar2 pontos2, jogar3 pontos3>>
+            gen_tcp:send(Socket,Data2),
+            player(Socket,Info,Flag,Jogo);
+
+        {ok,_}->
+            Data = list_to_binary("ok"),
+            gen_tcp:send(Socket,Data),
+            player(Socket,Info,Flag,Jogo);
+
+        {invalid,_}->
+            Data = list_to_binary("invalid"),
             gen_tcp:send(Socket,Data),
             player(Socket,Info,Flag,Jogo)
+            
     end.
 
 server(Listen)->
@@ -279,7 +289,7 @@ test_collisions(P1,[H|T])->
     end.
 
 normalize(Vector)->
-    Norma = sqrt(math:power(element(0,Vector)-element(0,Vector),2) + math:power(element(0,Vector)-element(0,Vector),2)), 
+    Norma = math:sqrt(math:power(element(0,Vector)-element(0,Vector),2) + math:power(element(0,Vector)-element(0,Vector),2)), 
     {element(0,Vector)/Norma, element(1,Vector)/Norma}.
 
 set_magnitude(Vector, Mag)->
@@ -345,17 +355,24 @@ move_player(Move, {X,Y}, Energy, Angle, Speed, Aceleration, Switch, {X2,Y2}) ->
         Dist = dist( {X,Y},{X2,Y2}),
         Vector_aux = set_magnitude(Vector_aux,(1000/math:power(Dist))),
         {X,Y} = point_minus_vector(point_plus_vector({X,Y},Aceleration),Vector_aux),
-        {{X,Y}, Energy, Angle, Speed , Aceleration, Switch}.
+        {{X,Y}, Energy + 0.01 , Angle, Speed , Aceleration, Switch}.
 
     
 plus_energy(Energia)-> Energia + 1. 
 
 init_game(Player1,Player2)->
-    Pid = spawn(fun()->play_game(Player1, Player2,{0,0},{0,0},100,100,[],[],0,0,0,0,0,0,true,true)end),
+    Pid = spawn(fun()->play_game(self(),Player1, Player2,{0,0},{0,0},100,100,[],[],0,0,0,0,0,0,true,true)end),
+    Init_time = erlang:system_time(),
     spawn(fun()->time_reds(Pid)end),
-    spawn(fun()->time_green(Pid)end).
+    spawn(fun()->time_green(Pid)end),
 
-play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2)->
+    receive
+        {Pid_playerWin, Pid_playerLose}->
+            ?MODULE ! {Pid_playerWin,Pid_playerLose,erlang:system_time() - Init_time}
+    end.
+
+
+play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2)->
     receive
         {Player1,Move}->
 
@@ -364,7 +381,8 @@ play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Spe
             if 
             ( Red )->
                 Player1 ! {game_over},
-                Player2 ! {win};
+                Player2 ! {win},
+                Pid ! {Player2,Player1};
             true->
                     Pos = ( test_collisions(Pos1,Green_bals) ),
                     if
@@ -372,8 +390,8 @@ play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Spe
                             E1= plus_energy(E1),
                             Green_bals = lists:delete(Pos,Green_bals),
                             Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals},
-                            Player2 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals},
-                            play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
+                            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Red_bals,Green_bals},
+                            play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
                         true->
 
                             T1 = indice(0,Pos1),
@@ -384,7 +402,7 @@ play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Spe
                                     Player2 ! {win};
                                 true->
                                     Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals},
-                                    Player2 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals}
+                                    Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Red_bals,Green_bals}
                             end
                     end
             end;
@@ -394,7 +412,8 @@ play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Spe
             if 
             ( T )->
                 Player2 ! {game_over},
-                Player1 ! {win};
+                Player1 ! {win},
+                Pid ! {Player1,Player2};
             true->
                     Pos = ( test_collisions(Pos2,Green_bals) ),
                     if
@@ -402,28 +421,30 @@ play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Spe
                             E1= plus_energy(E1),
                             Green_bals = lists:delete(Pos,Green_bals),
                             Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals},
-                            Player2 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals},
-                            play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
+                            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Red_bals,Green_bals},
+                            play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
                         true->
                             T1 = indice(0,Pos2),
                             T2 = indice(1,Pos2),
                             if
                                 ( (T1  > 100) or (T2 > 100) or (T1 < 0) or (T2 < 0) )->
                                     Player2 ! {game_over},
-                                    Player1 ! {win};
+                                    Player1 ! {win},
+                                    Pid ! {Player1,Player2};
                                 true->
                                     Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals},
-                                    Player2 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals}
+                                    Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Red_bals,Green_bals},
+                                    play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2)
                             end
                     end
             end;
         {green_bals,X,Y}->
             Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,lists:append([[X|Y]],Green_bals)},
-            Player2 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,lists:append([[X|Y]],Green_bals)};
+            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Red_bals,lists:append([[X|Y]],Green_bals)};
 
         {red_bals,X,Y}->
             Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,lists:append([[X|Y]],Red_bals),Green_bals},
-            Player2 ! {Player1,Player2,Pos1,Pos2,E1,E2,lists:append([[X|Y]],Red_bals),Green_bals};
+            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,lists:append([[X|Y]],Red_bals),Green_bals};
 
         {red,_}->
            spawn(fun()-> spawn_reds(self(),Pos1,Pos2) end);
@@ -439,13 +460,15 @@ play_game(Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Spe
 %................................................
 % loop recebe 3 argumentos.
 % Map -> que é onde se guarda toda a informaçao
-%       User => {Password,online,level}
+%       User => {Password,online,level,Pontos,nvitorias}
 %
 % Level -> que é onde se encontram os jogadores 
 %          que estão à espera de parceiro para jogar
 %          LEVEL => [Jogador1,Jogador2...Jogadorn]
 %
 % List -> top "3" de jogadores com mais nivel
+%
+% 
 %
 % Pids -> associa a cada Pid o numero de utilizador
 %..........................................
@@ -469,7 +492,7 @@ loop(Map,Level,List,Pids) ->
             error ->
                 From ! {ok, ?MODULE},
                     % username -> [Password , online, level]
-                Map = maps:put(User,{P,true,0},Map),
+                Map = maps:put(User,{P,true,1,0,0},Map),
                 loop(Map,Level,List,Pids);
             % caso ja exista algum utilizador com esse nome
             % envia uma mensagem de erro
@@ -488,7 +511,7 @@ loop(Map,Level,List,Pids) ->
             % a password for a correta 
             % e estiver online
             % a conta é apagada
-            {ok, {P,true,_}}-> 
+            {ok, {P,true,_,_,_}}-> 
                 From ! { ok , ?MODULE},
                 Map = maps:remove(User,Map),
                 loop(Map,Level,List,Pids);
@@ -504,9 +527,9 @@ loop(Map,Level,List,Pids) ->
         % e se a password é a correta
         % estar online é algo irrelevante (apsar de ser estranho) 
         case maps:find(U,Map) of
-            {ok,{P,_,L}}->
+            {ok,{P,_,L_,_}}->
                 From ! {ok, ?MODULE },
-                Map = maps:put(U,{P,true,L},Map),
+                Map = maps:put(U,{P,true,L_,_},Map),
                 loop(Map,Level,List,put(From,U,Pids));
             % qualquer outro caso é enviado uma mensagem de erro
             _->
@@ -520,9 +543,9 @@ loop(Map,Level,List,Pids) ->
         % e se a password é a correta
         % estar ofline é algo irrelevante (apsar de ser estranho) 
         case maps:find(U,Map) of
-            {ok,{P,_,_}}->
+            {ok,{P,_,_,_,_}}->
                 From ! {ok, ?MODULE },
-                Map = maps:put(U,{P,false,_},Map),
+                Map = maps:put(U,{P,false,_,_,_},Map),
                 loop(Map,Level,List,maps:remove(From,Pids));
             % qualquer outro caso é enviado uma mensagem de erro
             _->
@@ -531,12 +554,12 @@ loop(Map,Level,List,Pids) ->
         end;
     % subir de nivel...............................
     % 
-    receive {levelUp,U,P,From}->
+    receive {levelUp,U}->
         % verificar se a conta realmente existe
         % se a password está correta
         % e atribuir a X o nivel atual do jogador. 
         case maps:find(U,Map) of
-            {ok,{P,_,X}} -> From ! {ok, ?MODULE},
+            {ok,{P,_,X,_,_}} -> From ! {ok, ?MODULE},
                     % username -> [Password , online, level]
                     % acrescentar 1 ao nivel do jogador. 
                         % se o top tiver menos que 3 jogadores, 
@@ -552,8 +575,7 @@ loop(Map,Level,List,Pids) ->
                             %  se replace for só usado aqui, é mais eficiente se adicionar 
                             %  logo no sitio certo e depois ja nao se fazer sort.
                         if
-                            ( (length(List) < 3) or (X+1 > element(2,head(list))) )-> 
-                                Map = maps:put(User,{P,true,X+1},Map),
+                            ( (length(List) < 3) or (X > element(2,head(list))) )-> 
                                 List_aux = replace(List,{U,X+1}),
                                 List = lists:keysort(2, List_aux),
                                 loop(Map,Level,List,Pids)
@@ -569,7 +591,25 @@ loop(Map,Level,List,Pids) ->
     receive {top3,_}->
         Msg = list_to_binary(string:join(lists:map(fun(X)-> element(1,X) ++" "++ integer_to_list(element(2,X)) end,List),",")),
         LPids = maps:keys(Pids),
-        [Pid ! {top3,Msg} || Pid <- LPids];
+        Map_aux = maps:map(fun(K,V)-> element(4,V)end,Map),
+        Msg2 = list_to_binary(sublist(lists:sort(fun(X)-> element(2,X)end, maps:to_list(Map_aux)),3)),
+        [Pid ! {top3,Msg,Msg2} || Pid <- LPids];
+
+    receive {Win,Lose,Points}->
+            UsernameW = maps:get(Win,Pids),
+            UsernameL = maps:get(Lose,Pids),
+            KeyW = maps:get(UsernameW,Map),
+            {P,O,L,Pt,V} = maps:get(UsernameL,Map),
+            Map = maps:put(UsernameL,{P,O,Pt+Points,V},Map),
+            if
+                (element(5,KeyW)+1 == element_in_list(3,KeyW))->
+                    ?MODULE ! {levelUp,UsernameW},
+                    Map = maps:put(UsernameW,{P,O,L+1,Pt+Points,0},Map),
+                    loop(Map,Level,List,Pids);
+                true->
+                    Map = maps:put(UsernameW,{P,O,L,Pt+Points,V+1},Map),
+                    loop(Map,Level,List,Pids);
+
 
         % funcao que envia para o jogador o top 3 de jogadores com mais nivel, e os seus usernames. 
     receive {play,U,P,From}->
@@ -591,9 +631,14 @@ loop(Map,Level,List,Pids) ->
                                 loop(Map,Level,List,Pids);
 
                             _-> loop(Map,put([X],From,Level),List,Pids)
+                            end
                         end
                 end
-        end.
+            _>
+                From ! {invalid, ?MODULE},
+                    loop(Map,Level,List,Pids)
+        end
+    end.
 
 time_top(Pid)->
     lib_misc:sleep(100),
