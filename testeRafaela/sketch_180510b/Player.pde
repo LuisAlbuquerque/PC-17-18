@@ -40,6 +40,8 @@ class player extends Obj{
     if(keyboard[1] == true && number == 0){angle-=0.07;switch1=true;}
     if(keyboard[2] == true && number == 0){angle+=0.07;switch1=true;}
     if(keyboard[0] == true && number == 0){ink-=1;start=1;if(switch1){speed=0.05;switch1=false;}else{if(speed<0.08){speed+=0.01;}};}
+    if(number == 1){if(speed<0.08){speed+=0.01;}}
+
 
     update();
     
@@ -52,7 +54,7 @@ class player extends Obj{
       objects[5].remove();
     }
     
-    if(ink > 0 && 0<coords.x && coords.x<displayWidth && 0<coords.y && coords.y<displayHeight && PVector.dist(coords,objects[2].coords)>20 && PVector.dist(coords,objects[3].coords)>20){
+    if(ink > 0 && 0<coords.x && coords.x<1300 && 0<coords.y && coords.y<700 && PVector.dist(coords,objects[2].coords)>20 && PVector.dist(coords,objects[3].coords)>20){
       //vida
       image(image,450*number,0,50,50);
       fill(200,0,0);

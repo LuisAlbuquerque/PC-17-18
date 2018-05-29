@@ -3,7 +3,7 @@ class enemy extends Obj{
   //public float angle = 0;
   
   enemy(){
-    super(int(random(0,displayWidth)),int(random(0,displayHeight)),"enemy.png",1);
+    super(int(random(0,800)),int(random(0,600)),"enemy.png",1);
   }
   enemy(int x, int y){
         super(x,y,"enemy.png",1);

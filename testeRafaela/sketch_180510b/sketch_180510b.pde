@@ -5,7 +5,6 @@ boolean[] keyboard= {false,false,false};
 public int N = 1;
 public int Score = 50;
 public int gameover= 1;
-public int entrou = 2;
 ArrayList<Top3> nivel= new ArrayList<Top3>();
 ArrayList<Top3> score= new ArrayList<Top3>();
 ArrayList<TEXTBOX> textboxes = new ArrayList<TEXTBOX>();
@@ -27,7 +26,9 @@ final int stateHelp= 8;
 final int stateGmov=9;
 final int stateEspera=10;
 
-int state= statePlay; 
+int state= stateJogar;
+public int start = 0;
+int entrou = 0;
 
 // variaveis caixas
 
@@ -38,12 +39,12 @@ int my1= 100;
 int my2= 200;
 int my3= 300;
 int my4= 300;
-Top3 um = new Top3("A",3);
-Top3 dois = new Top3("C",2);
-Top3 tres = new Top3("B",1);
-Top3 ums = new Top3("A",100);
-Top3 doiss = new Top3("B",300);
-Top3 tress = new Top3("D",200);
+Top3 um = new Top3();
+Top3 dois = new Top3();
+Top3 tres = new Top3();
+Top3 ums = new Top3();
+Top3 doiss = new Top3();
+Top3 tress = new Top3();
 
  
 
@@ -51,17 +52,19 @@ Top3 tress = new Top3("D",200);
 
 
 void setup() {
-   size(displayWidth, displayHeight);
+   size(1300, 700);
    background=loadImage("menu.png");
    backgroundJogo=loadImage("background5.jpg");
-   background.resize(displayWidth, displayHeight);
-   backgroundJogo.resize(displayWidth, displayHeight);
+   background.resize(1300, 700);
+   backgroundJogo.resize(1300, 700);
+   
     objects[0]=new player(700,450,"Canada.png",0);
     objects[1]=new player(1300,450,"portugal.png",1);
     objects[2]=new enemy();
     objects[3]=new enemy();
     objects[4]=new inkOrb();
     objects[5]=new inkOrb();
+    
    caixas();
    nivel.add(um);
    nivel.add(dois);
@@ -217,7 +220,7 @@ void mousePressed() {
            
         case statePlay:
           if (t == caixas.get(5)){
-              entrou = 0;
+             start = millis();
              state=stateEspera;
           }
           else if (t == caixas.get(4)){
@@ -249,7 +252,6 @@ void mousePressed() {
        case stateEspera:
           if (t == caixas.get(9)){
              state=statePlay;
-             entrou=2;
           }
           if(entrou==1){
             state=stateJogar;
@@ -263,13 +265,8 @@ void mousePressed() {
            break;
          case stateGmov:
           if (t == caixas.get(13)){
-               state=stateJogar;
-               objects[0]=new player(500,300,"Canada.png",0);
-               objects[1]=new player(700,300,"portugal.png",1);
-               objects[2]=new enemy();
-               objects[3]=new enemy();
-               objects[4]=new inkOrb();
-               objects[5]=new inkOrb();
+               start = millis();
+               state=stateEspera;
                gameover=1;
            }
            else if (t == caixas.get(14)){
