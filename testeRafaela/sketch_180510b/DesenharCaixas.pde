@@ -46,7 +46,7 @@ void caixas(){
    
    Caixa caixaP = new Caixa("Play",(width+500) / 2, 250, 200, 50);
    Caixa caixaRanking = new Caixa("Ranking",(width+500) / 2, 350,200, 50);
-   Caixa caixaO = new Caixa("Opções",(width+500) / 2, 350,200, 50);
+   Caixa caixaO = new Caixa("Opções",(width+500) / 2, 30050,200, 50);
    Caixa caixaSair = new Caixa("Sair",(width+500) / 2, 550,200, 50);
    Caixa caixaHelp = new Caixa("Como Jogar",(width+500) / 2, 450,200, 50);
    

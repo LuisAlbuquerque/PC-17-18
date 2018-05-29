@@ -83,6 +83,10 @@ void drawForStatePlay() {
    // LABELS
    fill(250, 250, 250);
    textSize(32);
+   text("NIVEL: "+ N, 50, 60);
+   text("SCORE: " + Score, 50 , 100);
+   
+   
    caixas.get(5).DRAW();
    //caixas.get(4).DRAW();
    caixas.get(6).DRAW();
@@ -134,5 +138,42 @@ void drawForStateGameOver(){
   textSize(32);
   caixas.get(13).DRAW();
   caixas.get(14).DRAW();
+  textSize(26);
+  text("NIVEL: " + N, 20, 60);
+  text("SCORE: " + Score, 20 , 100);
+  text("Pos:    Nome:        Nivel:", 20, 140);
+  text("Pos:    Nome:        Score:", 20, 140+160);
+  int y=140;
+  int x=20;
+  text("1         " + nivel.get(0).nome + "               "+ nivel.get(0).n ,x, y+40);
+  text("2         " + nivel.get(1).nome + "               "+ nivel.get(1).n ,x, y+80);
+  text("3         " + nivel.get(2).nome + "               "+ nivel.get(2).n ,x, y+120);
+   y+=160;
+  text("1         " + score.get(0).nome + "               "+ score.get(0).n ,x, y+40);
+  text("2         " + score.get(1).nome + "               "+ score.get(1).n ,x, y+80);
+  text("3         " + score.get(2).nome + "               "+ score.get(2).n ,x, y+120);
  
+}
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+void drawForStateRanking(){
+  fill(250, 250, 250);
+  textSize(32);
+  text("RANKING:", width/2 -200 , 40);
+  textSize(26);
+  text("Pos:    Nome:        Nivel:", 20, 90);
+  text("Pos:    Nome:        Score:", 750, 300);
+  textSize(26);
+  int y=90;
+  text("1         " + nivel.get(0).nome + "               "+ nivel.get(0).n ,20, y+40);
+  text("2         " + nivel.get(1).nome + "               "+ nivel.get(1).n ,20, y+80);
+  text("3         " + nivel.get(2).nome + "               "+ nivel.get(2).n ,20, y+120);
+  y=300;
+  int x=750;
+  text("1         " + score.get(0).nome + "               "+ score.get(0).n ,x, y+40);
+  text("2         " + score.get(1).nome + "               "+ score.get(1).n ,x, y+80);
+  text("3         " + score.get(2).nome + "               "+ score.get(2).n ,x, y+120);
+  caixas.get(9).DRAW();
 }

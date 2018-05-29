@@ -2,9 +2,12 @@ Obj[] objects= new Obj[6];
 PImage background;
 PImage backgroundJogo;
 boolean[] keyboard= {false,false,false};
-
+public int N = 1;
+public int Score = 50;
 public int gameover= 1;
 
+ArrayList<Top3> nivel= new ArrayList<Top3>();
+ArrayList<Top3> score= new ArrayList<Top3>();
 ArrayList<TEXTBOX> textboxes = new ArrayList<TEXTBOX>();
 ArrayList<TEXTBOXP> textboxesP = new ArrayList<TEXTBOXP>();
 ArrayList<Caixa> caixas = new ArrayList<Caixa>();
@@ -34,6 +37,17 @@ int my1= 100;
 int my2= 200;
 int my3= 300;
 int my4= 300;
+Top3 um = new Top3("A",3);
+Top3 dois = new Top3("C",2);
+Top3 tres = new Top3("B",1);
+Top3 ums = new Top3("A",100);
+Top3 doiss = new Top3("B",300);
+Top3 tress = new Top3("D",200);
+
+ 
+
+
+
 
 void setup() {
    size(displayWidth, displayHeight);
@@ -48,6 +62,12 @@ void setup() {
     objects[4]=new inkOrb();
     objects[5]=new inkOrb();
    caixas();
+   nivel.add(um);
+   nivel.add(dois);
+   nivel.add(tres);
+   score.add(doiss);
+   score.add(tress);
+   score.add(ums);
 }
 
 
@@ -80,7 +100,11 @@ void draw() {
      case stateGmov: background (background);
                      drawForStateGameOver();
                      break;
+     case stateRanking: background (background);
+                     drawForStateRanking();
+                     break;
      default : break;
+     
    }
 }
    
@@ -208,6 +232,12 @@ void mousePressed() {
             textboxesP.get(0).esconde= "";
             textboxesP.get(0).Text= "";
             logged=2;
+          }
+          break;
+          
+        case stateRanking:
+          if (t == caixas.get(9)){
+             state=statePlay;
           }
           break;
            
