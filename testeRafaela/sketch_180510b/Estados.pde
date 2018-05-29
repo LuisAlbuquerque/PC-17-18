@@ -177,3 +177,16 @@ void drawForStateRanking(){
   text("3         " + score.get(2).nome + "               "+ score.get(2).n ,x, y+120);
   caixas.get(9).DRAW();
 }
+
+void drawForStateEspera(){
+  fill(250, 250, 250);
+  textSize(32);
+  if (entrou==0){
+    int s=0;
+    s = millis()/1000; //convert milliseconds to seconds, store values.
+    int m =0;
+    m= millis() /1000 / 60;
+    text(m+":"+s, width/2,height/2);
+  }
+  caixas.get(9).DRAW();
+}

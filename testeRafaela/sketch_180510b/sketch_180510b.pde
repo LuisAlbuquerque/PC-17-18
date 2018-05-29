@@ -5,7 +5,7 @@ boolean[] keyboard= {false,false,false};
 public int N = 1;
 public int Score = 50;
 public int gameover= 1;
-
+public int entrou = 2;
 ArrayList<Top3> nivel= new ArrayList<Top3>();
 ArrayList<Top3> score= new ArrayList<Top3>();
 ArrayList<TEXTBOX> textboxes = new ArrayList<TEXTBOX>();
@@ -25,8 +25,9 @@ final int stateJogar= 6;
 final int stateRanking= 7;
 final int stateHelp= 8;
 final int stateGmov=9;
+final int stateEspera=10;
 
-int state= stateMenu; 
+int state= statePlay; 
 
 // variaveis caixas
 
@@ -102,6 +103,9 @@ void draw() {
                      break;
      case stateRanking: background (background);
                      drawForStateRanking();
+                     break;
+     case stateEspera: background (backgroundJogo);
+                     drawForStateEspera();
                      break;
      default : break;
      
@@ -213,7 +217,8 @@ void mousePressed() {
            
         case statePlay:
           if (t == caixas.get(5)){
-             state=stateJogar;
+              entrou = 0;
+             state=stateEspera;
           }
           else if (t == caixas.get(4)){
              state=stateOpcoes;
@@ -238,6 +243,16 @@ void mousePressed() {
         case stateRanking:
           if (t == caixas.get(9)){
              state=statePlay;
+          }
+          break;
+       
+       case stateEspera:
+          if (t == caixas.get(9)){
+             state=statePlay;
+             entrou=2;
+          }
+          if(entrou==1){
+            state=stateJogar;
           }
           break;
            
