@@ -30,12 +30,32 @@ void caixas(){
    passC.BorderWeight = 3;
    passC.BorderEnable = false;
 
+//____________________REMOVE CONTA________________________________//
+  TEXTBOX userR = new TEXTBOX();
+     userTB.X = 160;
+     userTB.Y = 103;
+     userTB.W = 200;
+     userTB.H = 35;
+     userTB.BorderEnable = false;
+   
+   TEXTBOX mailR = new TEXTBOX();
+     mailTB.X = 160;
+     mailTB.Y = 203;
+     mailTB.W = 500;
+     mailTB.H = 35;
+     mailTB.BorderEnable = false;
+  
+  TEXTBOXP passR = new TEXTBOXP(160, 153, 200, 35);
+   passC.BorderWeight = 3;
+   passC.BorderEnable = false;
+     
    
    //Caixas de texto do menu
    
    Caixa caixaL = new Caixa("Login",(width+500) / 2, 250, 200, 50);
    Caixa caixaC = new Caixa("Criar Conta",(width+500) / 2, 350, 200, 50);
-   Caixa caixaS = new Caixa("Sair",(width+500) / 2, 450, 200, 50);
+   Caixa caixaRem = new Caixa("Remover Conta",(width+500) / 2, 450, 200, 50);
+   Caixa caixaS = new Caixa("Sair",(width+500) / 2, 550, 200, 50);
    
    //caixa de texto recuperar conta
    
@@ -66,10 +86,12 @@ void caixas(){
    textboxes.add(userTB); // 0
    textboxes.add(mailTB); // 1
    textboxes.add(userC);//2
-   
+   textboxes.add(userR); // 3
+   textboxes.add(mailR);//4
    //
    textboxesP.add(passTB); // 0
    textboxesP.add(passC); //1
+   textboxesP.add(passR); //2
    
    //   
    caixas.add(caixaL); // 0
@@ -95,6 +117,8 @@ void caixas(){
    //
    caixas.add(caixaNovo);//13
    caixas.add(caixaSairN);//14
+   //
+   caixas.add(caixaRem);//15
    
    
  }

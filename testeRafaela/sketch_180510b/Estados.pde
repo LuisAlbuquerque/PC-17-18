@@ -4,6 +4,7 @@ void drawForStateMenu() {
   caixas.get(0).DRAW();
   caixas.get(1).DRAW();
   caixas.get(2).DRAW();
+  caixas.get(15).DRAW();
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------//
@@ -185,4 +186,31 @@ void drawForStateEspera(){
   int minutos = ((millis())-start) /1000 / 60;
   text(minutos+":"+segundos, width/2,height/2);
   caixas.get(9).DRAW();
+}
+
+
+void drawForStateRemC(){
+  fill(250, 250, 250);
+   text("REMOVER CONTA", (160 + textWidth("REMOVER CONTA")) / 2, 60);
+   textSize(24);
+   text("Email: ", 20, 230);
+   text("Utilizador: ", 20, 130);
+   text("Password: ", 20, 180);
+   
+   
+   // DRAW THE TEXTBOXES
+   caixas.get(9).DRAW();
+   textboxes.get(3).DRAW();
+   textboxesP.get(2).DRAW();
+   textboxes.get(4).DRAW();
+   
+   // JUST FOR DEMO (DO NOT EVER DO THAT!)
+   if (remove==0) {
+      fill(250, 250, 250);
+      text("CONTA REMOVIDA COM SUCESSO !", (textWidth("CONTA REMOVIDA COM SUCESSO !")) / 3, 230);
+   }
+   else if (remove==1){
+     fill(250, 250, 250);
+     text("TENTA DE NOVO!", (textWidth("TENTA DE NOVO!")) / 3, 230);
+   }
 }
