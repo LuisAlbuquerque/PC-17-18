@@ -6,11 +6,12 @@ import java.io.PrintWriter;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 import java.io.*;
 import java.net.*;
 
-String[] rec;
+ArrayList<String> rec = new ArrayList<String>();
 String send;
 String username;
 String password;
@@ -47,7 +48,8 @@ final int stateGmov=9;
 final int stateEspera=10;
 final int stateRemC=11;
 
-int state= stateMenu;
+int state= stateEspera;
+
 public int start = 0;
 // variaveis caixas
 
@@ -58,14 +60,12 @@ int my1= 100;
 int my2= 200;
 int my3= 300;
 int my4= 300;
-Top3 um = new Top3();
-Top3 dois = new Top3();
-Top3 tres = new Top3();
-Top3 ums = new Top3();
-Top3 doiss = new Top3();
-Top3 tress = new Top3();
-
- 
+Top3 um = new Top3("None",0);
+Top3 dois = new Top3("None",0);
+Top3 tres = new Top3("None",0);
+Top3 ums = new Top3("None",0);
+Top3 doiss = new Top3("None",0);
+Top3 tress = new Top3("None",0);
 
 
 
@@ -76,15 +76,8 @@ void setup() {
    backgroundJogo=loadImage("background5.jpg");
    background.resize(1300, 700);
    backgroundJogo.resize(1300, 700);
-   /*
-    objects[0]=new player(700,450,"Canada.png",0);
-    objects[1]=new player(1300,450,"portugal.png",1);
-    objects[2]=new enemy();
-    objects[3]=new enemy();
-    objects[4]=new inkOrb();
-    objects[5]=new inkOrb();
-    */
    caixas();
+   //rec.add("ola");
    nivel.add(um);
    nivel.add(dois);
    nivel.add(tres);
@@ -113,16 +106,18 @@ void draw() {
                      break;
      case stateJogar: background (backgroundJogo);
                       drawForStateJogar();
-                      if(rec[0].equals("gameover") || rec[0].equals("win")){
+                      if(rec.get(0).equals("gameover") || rec.get(0).equals("win")){
                         state=stateGmov;
                       }else{
-                        objects.clear();
-                        objects.add(0,new player(0,rec[0],rec[1],rec[8],rec[6],rec[14],rec[10],rec[11],rec[4]));
-                        objects.add(1,new player(1,rec[2],rec[3],rec[9],rec[7],rec[15],rec[12],rec[13],rec[5]));
-                        objects.add(2,new inkOrb(rec[16],rec[17]));
-                        objects.add(3,new inkOrb(rec[18],rec[19]));
-                        for(int x = 20, y = 21; y < objects.size(); x+=2, y+=2){
-                          objects.add(new enemy(rec[x],rec[y]));
+                        synchronized(objects){
+                          objects.clear();
+                          objects.add(0,new player(0,rec.get(0),rec.get(1),rec.get(8),rec.get(6),rec.get(14),rec.get(10),rec.get(11),rec.get(4)));
+                          objects.add(1,new player(1,rec.get(2),rec.get(3),rec.get(9),rec.get(7),rec.get(15),rec.get(12),rec.get(13),rec.get(5)));
+                          objects.add(2,new inkOrb(rec.get(16),rec.get(17)));
+                          objects.add(3,new inkOrb(rec.get(18),rec.get(19)));
+                          for(int x = 20, y = 21; y < objects.size(); x+=2, y+=2){
+                            objects.add(new enemy(rec.get(x),rec.get(y)));
+                          }
                         }
                         send = String.join(",", String.valueOf(keyboard[0]), String.valueOf(keyboard[1]), String.valueOf(keyboard[2]));
                       }
@@ -134,17 +129,26 @@ void draw() {
                      drawForStateGameOver();
                      break;
      case stateRanking: background (background);
-                     um= new Top3(rec[0],int(rec[1]));
-                     dois= new Top3(rec[2],int(rec[3]));
-                     tres= new Top3(rec[4],int(rec[5]));
-                     ums= new Top3(rec[6],int(rec[7]));
-                     doiss= new Top3(rec[8],int(rec[9]));
-                     tress= new Top3(rec[10],int(rec[11]));
+                     try {
+                       wait();
+                       synchronized(nivel){
+                         nivel.set(0, new Top3(rec.get(0),int(rec.get(1))));
+                         nivel.set(1, new Top3(rec.get(2),int(rec.get(3))));
+                         nivel.set(2, new Top3(rec.get(4),int(rec.get(5))));
+                       }
+                       synchronized(score){
+                         score.set(0, new Top3(rec.get(6),int(rec.get(7))));
+                         score.set(1, new Top3(rec.get(8),int(rec.get(9))));
+                         score.set(2, new Top3(rec.get(10),int(rec.get(11))));
+                       }
+                     } catch (InterruptedException e) {
+                       e.printStackTrace();
+                     }
                      drawForStateRanking();
                      break;
      case stateEspera: background (backgroundJogo);
                      drawForStateEspera();
-                     if(int(rec[0])==1){
+                     if(rec.get(0)=="play"){
                        state=stateJogar;
                      }
                      break;
@@ -163,33 +167,42 @@ void draw() {
 //________________________________________________________________________________//
 
 // JUST FOR DEMO
-// JUST FOR DEMO
 public void Submit() {
   if(textboxes.get(0).Text.matches("[a-zA-Z0-9]*") && textboxesP.get(0).Text.matches("[a-zA-Z0-9]*")){
     username = textboxes.get(0).Text;
     password = textboxes.get(0).Text;
     send = String.join(",", "login", username, password);
-    if(rec[0].equals("ok")){
-      logged = 0;
-    }
-    if(rec[0].equals("invalid")){
-      logged = 1;
+    try {
+      wait();
+      if(rec.get(0).equals("ok")){//receber nivel, vitórias e pontuação
+        logged = 0;
+      }
+      if(rec.get(0).equals("invalid")){
+        logged = 1;
+      }
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
   }else{
     logged = 1;
   }
 }
 // Signup
-public void Create() {
+synchronized public void Create() {
   if(textboxes.get(2).Text.matches("[a-zA-Z0-9]*") && textboxesP.get(1).Text.matches("[a-zA-Z0-9]*") && textboxes.get(2).Text.matches("^[A-Za-z0-9+_.-]+@(.+)$")){
     username = textboxes.get(2).Text;
     password = textboxesP.get(1).Text;
     send = String.join(",", "login", username, password);
-    if(rec[0].equals("ok")){
-      create = 0;
-    }
-    if(rec[0].equals("invalid")){
-      create = 1;
+    try {
+      wait();
+      if(rec.get(0).equals("ok")){//receber nivel, vitórias e pontuação
+        logged = 0;
+      }
+      if(rec.get(0).equals("invalid")){
+        logged = 1;
+      }
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
   }else{
     create = 1;

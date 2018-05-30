@@ -1,7 +1,6 @@
 public class Receiver implements Runnable{
   BufferedReader in;
-
-
+  
   public Receiver(Socket s){
     try{
       this.in = new BufferedReader(new InputStreamReader( s.getInputStream()));
@@ -14,7 +13,8 @@ public class Receiver implements Runnable{
       try{
         while(true){
           String r = in.readLine();
-          rec = r.split(",");
+          rec = new ArrayList<String>(Arrays.asList(r.split(",")));
+          notifyAll();
         }
       }catch(Exception e){
         e.printStackTrace();

@@ -56,15 +56,7 @@ class player extends Obj{
 
 
     update();
-    
-    if(PVector.dist(coords,objects.get(2).coords)<30){
-      ink = 300;
-      objects.get(2).remove();
-    }
-    if(PVector.dist(coords,objects.get(3).coords)<30){
-      ink = 300;
-      objects.get(3).remove();
-    }
+
     
     if(ink > 0 && 0<coords.x && coords.x<1300 && 0<coords.y && coords.y<700 && aux()){
       //vida
