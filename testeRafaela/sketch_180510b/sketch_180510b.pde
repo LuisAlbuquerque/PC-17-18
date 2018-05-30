@@ -67,6 +67,7 @@ Top3 ums = new Top3("None",0);
 Top3 doiss = new Top3("None",0);
 Top3 tress = new Top3("None",0);
 
+Cliente c = new Cliente("123","321");
 
 
 
@@ -119,7 +120,7 @@ void draw() {
                             objects.add(new enemy(rec.get(x),rec.get(y)));
                           }
                         }
-                        send = String.join(",", String.valueOf(keyboard[0]), String.valueOf(keyboard[1]), String.valueOf(keyboard[2]));
+                        send = String.join("", keyboard[0] ? "w" : "",  keyboard[1] ? "a" : "",  keyboard[3] ? "d" : "");
                       }
                       break;
      case stateHelp: background (background);
