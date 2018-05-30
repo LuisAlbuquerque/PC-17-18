@@ -109,6 +109,14 @@ listPoint_to_list([Point|CPoint])->
                integer_to_list(element(2,Point)) ++"," ++
                listPoint_to_list(CPoint).
 
+bool_to_list(Bool)->
+    if
+        (Bool)->
+            "true";
+        true->
+            "false"
+    end.
+
 
 %..................................
 %
@@ -159,15 +167,25 @@ player(Socket,Info,Flag,Jogo)->
             gen_tcp:send(Socket, Data),
             player(Socket,Info,Flag,Jogo);
 
-        {_, _,Pos1,Pos2,E1,E2,Red_bals,Green_bals}->
+        {_,_,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2,Red_bals,Green_bals}->
             Data = integer_to_list(element(1,Pos1)) ++"," ++
                    integer_to_list(element(2,Pos1)) ++"," ++
                    integer_to_list(element(1,Pos2)) ++"," ++
                    integer_to_list(element(2,Pos2)) ++"," ++
                    integer_to_list(E1) ++"," ++
                    integer_to_list(E2) ++"," ++
-                   listPoint_to_list(Red_bals) ++","++
-                   listPoint_to_list(Green_bals),
+                   float_to_list(Angle1) ++"," ++
+                   float_to_list(Angle2) ++"," ++
+                   integer_to_list(Speed1) ++"," ++
+                   integer_to_list(Speed2) ++"," ++
+                   float_to_list(element(1,Aceleration1)) ++"," ++
+                   float_to_list(element(2,Aceleration1)) ++"," ++
+                   float_to_list(element(1,Aceleration2)) ++"," ++
+                   float_to_list(element(2,Aceleration2)) ++"," ++
+                   bool_to_list(Switch1) ++"," ++
+                   bool_to_list(Switch2) ++"," ++
+                   listPoint_to_list(Green_bals) ++","++
+                   listPoint_to_list(Red_bals),
             Data = list_to_binary(Data),
             gen_tcp:send(Socket,Data),
             player(Socket,Info,Flag,Jogo);
@@ -178,6 +196,28 @@ player(Socket,Info,Flag,Jogo)->
             %<<jogador1 pontos, jogar2 pontos2, jogar3 pontos3>>
             gen_tcp:send(Socket,Data2),
             player(Socket,Info,Flag,Jogo);
+            
+        {win,Level,Points,V}->
+            Data = integer_to_list(Level) ++ "," ++
+            integer_to_list(Points) ++ "," ++
+            integer_to_list(V),
+            Data = list_to_binary(Data),
+            Win = list_to_binary(win),
+            gen_tcp:send(Socket,Win),
+            gen_tcp:send(Socket,Data),
+            player(Socket,Info,Flag,Jogo);
+
+
+        {lose,Level,Points,V}->
+            Data = integer_to_list(Level) ++ "," ++
+            integer_to_list(Points) ++ "," ++
+            integer_to_list(V),
+            Data = list_to_binary(Data),
+            Lose = list_to_binary(win),
+            gen_tcp:send(Socket,Lose),
+            gen_tcp:send(Socket,Data),
+            player(Socket,Info,Flag,Jogo);
+            
 
         {ok,_}->
             Data = list_to_binary("ok"),
@@ -389,8 +429,8 @@ play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2
                         (Pos)->
                             E1= plus_energy(E1),
                             Green_bals = lists:delete(Pos,Green_bals),
-                            Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals},
-                            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Red_bals,Green_bals},
+                            Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, Red_bals,Green_bals},
+                            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, Red_bals,Green_bals},
                             play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
                         true->
 
@@ -401,8 +441,8 @@ play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2
                                     Player1 ! {game_over},
                                     Player2 ! {win};
                                 true->
-                                    Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals},
-                                    Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Red_bals,Green_bals}
+                            Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, Red_bals,Green_bals},
+                            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, Red_bals,Green_bals}
                             end
                     end
             end;
@@ -420,8 +460,8 @@ play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2
                         (Pos)->
                             E1= plus_energy(E1),
                             Green_bals = lists:delete(Pos,Green_bals),
-                            Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals},
-                            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Red_bals,Green_bals},
+                            Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, Red_bals,Green_bals},
+                            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, Red_bals,Green_bals},
                             play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
                         true->
                             T1 = indice(0,Pos2),
@@ -432,19 +472,19 @@ play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2
                                     Player1 ! {win},
                                     Pid ! {Player1,Player2};
                                 true->
-                                    Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals},
-                                    Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Red_bals,Green_bals},
+                            Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, Red_bals,Green_bals},
+                            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, Red_bals,Green_bals},
                                     play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_bals,Green_bals,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2)
                             end
                     end
             end;
         {green_bals,X,Y}->
-            Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Red_bals,lists:append([[X|Y]],Green_bals)},
-            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Red_bals,lists:append([[X|Y]],Green_bals)};
+            Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, Red_bals,lists:append([[X|Y]],Green_bals)},
+            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, Red_bals,lists:append([[X|Y]],Green_bals)};
 
         {red_bals,X,Y}->
-            Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,lists:append([[X|Y]],Red_bals),Green_bals},
-            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,lists:append([[X|Y]],Red_bals),Green_bals};
+            Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, lists:append([[X|Y]],Red_bals),Green_bals},
+            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, lists:append([[X|Y]],Red_bals),Green_bals};
 
         {red,_}->
            spawn(fun()-> spawn_reds(self(),Pos1,Pos2) end);
@@ -600,45 +640,43 @@ loop(Map,Level,List,Pids) ->
             UsernameL = maps:get(Lose,Pids),
             KeyW = maps:get(UsernameW,Map),
             {P,O,L,Pt,V} = maps:get(UsernameL,Map),
-            Map = maps:put(UsernameL,{P,O,Pt+Points,V},Map),
+            Map = maps:put(UsernameL,{P,O,L,Pt+Points,V},Map),
+            Lose ! {lose,L,Pt + Points,V},
             if
                 (element(5,KeyW)+1 == element_in_list(3,KeyW))->
                     ?MODULE ! {levelUp,UsernameW},
                     Map = maps:put(UsernameW,{P,O,L+1,Pt+Points,0},Map),
+                    Win ! {win,L+1,Pt + Points,0},
                     loop(Map,Level,List,Pids);
                 true->
                     Map = maps:put(UsernameW,{P,O,L,Pt+Points,V+1},Map),
+                    Win ! {win,L,Pt + Points,V},
                     loop(Map,Level,List,Pids);
 
 
-        % funcao que envia para o jogador o top 3 de jogadores com mais nivel, e os seus usernames. 
-    receive {play,U,P,From}->
-        case maps:find(U,Map) of
-            {ok,{P,_,X}} -> From ! {ok, ?MODULE},
-                case find(X,Level) of
-                    {ok,L} when length(L)>0 -> 
-                        spawn( fun()-> init_game(From,indice(1,L)) end),
-                        loop(Map,Level,List,Pids);
-
-                    _-> case find(X+1,Level) of
-                        {ok,L} when length(L)>0 -> 
-                            spawn( fun()-> init_game(From,indice(1,L)) end),
-                            loop(Map,Level,List,Pids);
-
-                        _-> case find(X-1,Level) of
-                            {ok,L} when length(L)>0 -> 
-                                spawn( fun()-> init_game(From,indice(1,L)) end),
-                                loop(Map,Level,List,Pids);
-
-                            _-> loop(Map,put([X],From,Level),List,Pids)
-                            end
-                        end
-                end
-            _>
-                From ! {invalid, ?MODULE},
-                    loop(Map,Level,List,Pids)
-        end
-    end.
+%    receive {play,U,P,From}->
+%        case maps:find(U,Map) of
+%            {ok,{P,_,X}} -> From ! {ok, ?MODULE},
+%                case find(X,Level) of
+%                    {ok,L} when length(L)>0 -> 
+%                        spawn( fun()-> init_game(From,indice(1,L)) end),
+%                        loop(Map,Level,List,Pids);
+%
+%                    _-> case find(X+1,Level) of
+%                        {ok,L} when length(L)>0 -> 
+%                            spawn( fun()-> init_game(From,indice(1,L)) end),
+%                            loop(Map,Level,List,Pids);
+%
+%                        _-> case find(X-1,Level) of
+%                            {ok,L} when length(L)>0 -> 
+%                                spawn( fun()-> init_game(From,indice(1,L)) end),
+%                                loop(Map,Level,List,Pids);
+%
+%                            _-> loop(Map,put([X],From,Level),List,Pids)
+%                            end
+%                        end
+%                end
+%        end.
 
 time_top(Pid)->
     lib_misc:sleep(100),
