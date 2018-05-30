@@ -20,6 +20,18 @@ class player extends Obj{
     number = n;
     switch1=false;
   }
+  
+  player(int number_, String x,String y,String velocity, String angle_, String switch1_, String acelerationx, String acelerationy, String ink_){
+    super(int(x),int(y),"Canada.png",float(velocity));
+    if(number_ == 1){
+      change_image("portugal.png");
+    }
+    aceleration= new PVector(float(acelerationx),float(acelerationy));
+    angle = float(angle_);
+    ink = int(ink_);
+    number = number_;
+    switch1 = boolean(switch1_);
+  }
 
   void update (){
     if(keyboard[0] == true && number == 0)
@@ -27,9 +39,9 @@ class player extends Obj{
     aceleration.setMag(speed);    
     vector.add(aceleration);
     if(start==1){
-      float a = atan2 (objects[1].coords. y - coords. y, objects[1].coords. x - coords. x) ;
+      float a = atan2 (objects.get(1).coords. y - coords. y, objects.get(1).coords. x - coords. x) ;
       shield = PVector.fromAngle(a);
-      shield.setMag((1/sq(PVector.dist(coords,objects[1].coords)))*1000);
+      shield.setMag((1/sq(PVector.dist(coords,objects.get(1).coords)))*1000);
       vector.sub(shield);
     }
     coords.add(vector);
@@ -45,16 +57,16 @@ class player extends Obj{
 
     update();
     
-    if(PVector.dist(coords,objects[4].coords)<30){
+    if(PVector.dist(coords,objects.get(2).coords)<30){
       ink = 300;
-      objects[4].remove();
+      objects.get(2).remove();
     }
-    if(PVector.dist(coords,objects[5].coords)<30){
+    if(PVector.dist(coords,objects.get(3).coords)<30){
       ink = 300;
-      objects[5].remove();
+      objects.get(3).remove();
     }
     
-    if(ink > 0 && 0<coords.x && coords.x<1300 && 0<coords.y && coords.y<700 && PVector.dist(coords,objects[2].coords)>20 && PVector.dist(coords,objects[3].coords)>20){
+    if(ink > 0 && 0<coords.x && coords.x<1300 && 0<coords.y && coords.y<700 && aux()){
       //vida
       image(image,450*number,0,50,50);
       fill(200,0,0);
@@ -77,5 +89,12 @@ class player extends Obj{
     text("Game Over", 10+360*number, 50);
     state=stateGmov;
     }
+  }
+  public Boolean aux(){
+    Boolean b = true;
+    for(int x = 4; x < objects.size(); x++){
+      b = b && (PVector.dist(coords,objects.get(x).coords)>20);
+    }
+  return b;
   }
 }

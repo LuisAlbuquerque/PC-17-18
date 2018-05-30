@@ -1,4 +1,24 @@
-Obj[] objects= new Obj[6];
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.io.File;
+import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.IOException;
+
+import java.io.*;
+import java.net.*;
+
+String[] rec;
+String send;
+String username;
+String password;
+ArrayList<Obj> objects = new ArrayList<Obj>();
+
+
+
+//Obj[] objects= new Obj[6];
 PImage background;
 PImage backgroundJogo;
 boolean[] keyboard= {false,false,false};
@@ -11,7 +31,7 @@ ArrayList<TEXTBOX> textboxes = new ArrayList<TEXTBOX>();
 ArrayList<TEXTBOXP> textboxesP = new ArrayList<TEXTBOXP>();
 ArrayList<Caixa> caixas = new ArrayList<Caixa>();
 int logged = 2; // 0 para login, 1 para failed, e 2 para enquanto nao clica enter
-int create = 2; // 0 creado para sucesso, 1 para já existe o username, e 2 para enquanto nao clica enter
+int create = 2; // 0 criado para sucesso, 1 para já existe o username, e 2 para enquanto nao clica enter
 int switchBackground = 1;
 //estados
 final int stateMenu = 0;
@@ -29,9 +49,6 @@ final int stateRemC=11;
 
 int state= stateMenu;
 public int start = 0;
-int entrou = 0;
-int remove = 2;
-
 // variaveis caixas
 
 int mw=200;
@@ -59,14 +76,14 @@ void setup() {
    backgroundJogo=loadImage("background5.jpg");
    background.resize(1300, 700);
    backgroundJogo.resize(1300, 700);
-   
+   /*
     objects[0]=new player(700,450,"Canada.png",0);
     objects[1]=new player(1300,450,"portugal.png",1);
     objects[2]=new enemy();
     objects[3]=new enemy();
     objects[4]=new inkOrb();
     objects[5]=new inkOrb();
-    
+    */
    caixas();
    nivel.add(um);
    nivel.add(dois);
@@ -96,8 +113,18 @@ void draw() {
                      break;
      case stateJogar: background (backgroundJogo);
                       drawForStateJogar();
-                      if (gameover==0){
+                      if(rec[0].equals("gameover") || rec[0].equals("win")){
                         state=stateGmov;
+                      }else{
+                        objects.clear();
+                        objects.add(0,new player(0,rec[0],rec[1],rec[8],rec[6],rec[14],rec[10],rec[11],rec[4]));
+                        objects.add(1,new player(1,rec[2],rec[3],rec[9],rec[7],rec[15],rec[12],rec[13],rec[5]));
+                        objects.add(2,new inkOrb(rec[16],rec[17]));
+                        objects.add(3,new inkOrb(rec[18],rec[19]));
+                        for(int x = 20, y = 21; y < objects.size(); x+=2, y+=2){
+                          objects.add(new enemy(rec[x],rec[y]));
+                        }
+                        send = String.join(",", String.valueOf(keyboard[0]), String.valueOf(keyboard[1]), String.valueOf(keyboard[2]));
                       }
                       break;
      case stateHelp: background (background);
@@ -107,10 +134,19 @@ void draw() {
                      drawForStateGameOver();
                      break;
      case stateRanking: background (background);
+                     um= new Top3(rec[0],int(rec[1]));
+                     dois= new Top3(rec[2],int(rec[3]));
+                     tres= new Top3(rec[4],int(rec[5]));
+                     ums= new Top3(rec[6],int(rec[7]));
+                     doiss= new Top3(rec[8],int(rec[9]));
+                     tress= new Top3(rec[10],int(rec[11]));
                      drawForStateRanking();
                      break;
      case stateEspera: background (backgroundJogo);
                      drawForStateEspera();
+                     if(int(rec[0])==1){
+                       state=stateJogar;
+                     }
                      break;
      case stateRemC: background (background);
                      drawForStateRemC();
@@ -127,34 +163,39 @@ void draw() {
 //________________________________________________________________________________//
 
 // JUST FOR DEMO
-void Submit() {
-   if (textboxes.get(0).Text.equals("R")) {
-      if (textboxesP.get(0).Text.equals("1")) {
-         logged = 0;        
-      } else {
-         logged = 1;
-      }
-   } else {
-         logged = 1;
-      }
+// JUST FOR DEMO
+public void Submit() {
+  if(textboxes.get(0).Text.matches("[a-zA-Z0-9]*") && textboxesP.get(0).Text.matches("[a-zA-Z0-9]*")){
+    username = textboxes.get(0).Text;
+    password = textboxes.get(0).Text;
+    send = String.join(",", "login", username, password);
+    if(rec[0].equals("ok")){
+      logged = 0;
+    }
+    if(rec[0].equals("invalid")){
+      logged = 1;
+    }
+  }else{
+    logged = 1;
+  }
+}
+// Signup
+public void Create() {
+  if(textboxes.get(2).Text.matches("[a-zA-Z0-9]*") && textboxesP.get(1).Text.matches("[a-zA-Z0-9]*") && textboxes.get(2).Text.matches("^[A-Za-z0-9+_.-]+@(.+)$")){
+    username = textboxes.get(2).Text;
+    password = textboxesP.get(1).Text;
+    send = String.join(",", "login", username, password);
+    if(rec[0].equals("ok")){
+      create = 0;
+    }
+    if(rec[0].equals("invalid")){
+      create = 1;
+    }
+  }else{
+    create = 1;
+  }
 }
 
-void Create() {
-   if (!textboxes.get(2).Text.equals("R")) {
-      if (!textboxesP.get(1).Text.equals("1")) {
-        if(!textboxes.get(1).Text.equals("R")){
-          create=0;
-         }
-         else{
-          create = 1;
-        }
-      }else {
-        create = 1;
-       }      
-   }else {
-     create = 1;
-    }
-}
 
 
 
@@ -233,6 +274,7 @@ void mousePressed() {
            
         case statePlay:
           if (t == caixas.get(5)){
+             send = String.join(",", "play", username, password);
              start = millis();
              state=stateEspera;
           }
@@ -240,12 +282,14 @@ void mousePressed() {
              state=stateOpcoes;
           }
           else if (t == caixas.get(6)){
+           send = String.join(",", "ranking", "", "");
            state=stateRanking;
           }
           else if (t == caixas.get(7)){
             state=stateHelp;
           }
           else if (t == caixas.get(8)){
+            send = String.join(",", "logout", textboxes.get(0).Text, textboxesP.get(0).Text);
             state=stateMenu;
             textboxes.get(0).nome = "";
             textboxes.get(0).Text = "";
@@ -257,6 +301,7 @@ void mousePressed() {
           break;
           
         case stateRanking:
+          
           if (t == caixas.get(9)){
              state=statePlay;
           }
@@ -265,9 +310,6 @@ void mousePressed() {
        case stateEspera:
           if (t == caixas.get(9)){
              state=statePlay;
-          }
-          if(entrou==1){
-            state=stateJogar;
           }
           break;
            
@@ -278,6 +320,7 @@ void mousePressed() {
            break;
          case stateGmov:
           if (t == caixas.get(13)){
+               send = String.join(",", "play", username, password);
                start = millis();
                state=stateEspera;
                gameover=1;

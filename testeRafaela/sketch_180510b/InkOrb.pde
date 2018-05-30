@@ -6,6 +6,9 @@ class inkOrb extends Obj{
   inkOrb(int x, int y){
     super(x,y,"ink.png",0);
   }
+  inkOrb(String x, String y){
+    super(int(x),int(y),"ink.png",0);
+  }
   void display(){     
     pushMatrix();
     translate(coords.x,coords.y);

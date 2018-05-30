@@ -11,7 +11,9 @@ abstract class Obj {
     vector= new PVector(0,0);
     speed = sp;
   }
-  
+  public void change_image(String s){
+    image = loadImage(s);
+  }
   void remove(){
     coords.x = -300;
     coords.y = -300;

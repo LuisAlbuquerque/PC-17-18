@@ -8,16 +8,19 @@ class enemy extends Obj{
   enemy(int x, int y){
         super(x,y,"enemy.png",1);
   }
+  enemy(String x, String y){
+        super(int(x),int(y),"enemy.png",1);
+  }
   
   
   void display(){
 
-      if(PVector.dist(coords,objects[0].coords)>PVector.dist(coords,objects[1].coords)){
-        vector= new PVector(objects[1].coords.x-coords.x,objects[1].coords.y-coords.y); //<>//
+      if(PVector.dist(coords,objects.get(0).coords)>PVector.dist(coords,objects.get(1).coords)){
+        vector= new PVector(objects.get(1).coords.x-coords.x,objects.get(1).coords.y-coords.y); //<>//
         vector.setMag(speed); //<>//
         coords.add(vector); //<>//
       }else{
-        vector= new PVector(objects[0].coords.x-coords.x,objects[0].coords.y-coords.y); //<>//
+        vector= new PVector(objects.get(0).coords.x-coords.x,objects.get(0).coords.y-coords.y); //<>//
         vector.setMag(speed); //<>//
         coords.add(vector); //<>//
       }

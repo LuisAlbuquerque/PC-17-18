@@ -203,7 +203,7 @@ void drawForStateRemC(){
    textboxes.get(3).DRAW();
    textboxesP.get(2).DRAW();
    textboxes.get(4).DRAW();
-   
+   /*
    // JUST FOR DEMO (DO NOT EVER DO THAT!)
    if (remove==0) {
       fill(250, 250, 250);
@@ -213,4 +213,5 @@ void drawForStateRemC(){
      fill(250, 250, 250);
      text("TENTA DE NOVO!", (textWidth("TENTA DE NOVO!")) / 3, 230);
    }
+   */
 }
