@@ -12,7 +12,9 @@ public class Sender implements Runnable{
   public void run(){
       try{
         while(true){
-          out.println(send);
+          if(!v.send.equals("")){
+            out.println(v.send);
+          }
         }
       }catch(Exception e){
         e.printStackTrace();

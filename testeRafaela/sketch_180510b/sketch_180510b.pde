@@ -11,30 +11,8 @@ import java.util.Arrays;
 import java.io.*;
 import java.net.*;
 
-ArrayList<String> rec = new ArrayList<String>();
-String send = "";
-String username;
-String password;
-ArrayList<Obj> objects = new ArrayList<Obj>();
+Variaveis v = new Variaveis();
 
-
-
-//Obj[] objects= new Obj[6];
-PImage background;
-PImage backgroundJogo;
-boolean[] keyboard= {false,false,false};
-public int N = 1;
-public int Score = 50;
-public int gameover= 1;
-ArrayList<Top3> nivel= new ArrayList<Top3>();
-ArrayList<Top3> score= new ArrayList<Top3>();
-ArrayList<TEXTBOX> textboxes = new ArrayList<TEXTBOX>();
-ArrayList<TEXTBOXP> textboxesP = new ArrayList<TEXTBOXP>();
-ArrayList<Caixa> caixas = new ArrayList<Caixa>();
-int logged = 2; // 0 para login, 1 para failed, e 2 para enquanto nao clica enter
-int create = 2; // 0 criado para sucesso, 1 para já existe o username, e 2 para enquanto nao clica enter
-int switchBackground = 1;
-//estados
 final int stateMenu = 0;
 final int stateLogin = 1;
 final int stateCreateC = 2;
@@ -48,110 +26,75 @@ final int stateGmov=9;
 final int stateEspera=10;
 final int stateRemC=11;
 
-int state= stateMenu;
-
-public int start = 0;
-// variaveis caixas
-
-int mw=200;
-int mh=50;
-int mx= (width-200) / 2;
-int my1= 100;
-int my2= 200;
-int my3= 300;
-int my4= 300;
-Top3 um = new Top3("None",0);
-Top3 dois = new Top3("None",0);
-Top3 tres = new Top3("None",0);
-Top3 ums = new Top3("None",0);
-Top3 doiss = new Top3("None",0);
-Top3 tress = new Top3("None",0);
-
-Cliente c = new Cliente("localhost","1234");
-
 
 
 void setup() {
    size(1300, 700);
-   background=loadImage("menu.png");
-   backgroundJogo=loadImage("background5.jpg");
-   background.resize(1300, 700);
-   backgroundJogo.resize(1300, 700);
+   v.background=loadImage("menu.png");
+   v.backgroundJogo=loadImage("background5.jpg");
+   v.background.resize(1300, 700);
+   v.backgroundJogo.resize(1300, 700);
    caixas();
+
+   try{
+      Socket s = new Socket(v.port1, Integer.parseInt(v.port2));
+      v.receiver = new Receiver(s);
+      v.senderC = new Sender(s);
+      Thread reader = new Thread(v.receiver);
+      Thread sender = new Thread(v.senderC);
+      reader.start();
+      sender.start();
+   }catch(Exception e){
+      e.printStackTrace();
+      System.exit(0);
+   }
+   
    //rec.add("ola");
-   nivel.add(um);
-   nivel.add(dois);
-   nivel.add(tres);
-   score.add(doiss);
-   score.add(tress);
-   score.add(ums);
+   v.nivel.add(v.um);
+   v.nivel.add(v.dois);
+   v.nivel.add(v.tres);
+   v.score.add(v.doiss);
+   v.score.add(v.tress);
+   v.score.add(v.ums);
 }
 
 
 void draw() {
-   switch(state){
-     case stateMenu: background (background);
+   switch(v.state){
+     case stateMenu: background (v.background);
                      drawForStateMenu();
                      break;
-     case stateLogin: background (background); 
+     case stateLogin: background (v.background); 
                      drawForStateLogin();
                      break;
-     case stateCreateC: background (background); 
+     case stateCreateC: background (v.background); 
                      drawForStateCreateC();
                      break;
-     case stateRecuperarC: background (background); 
+     case stateRecuperarC: background (v.background); 
                      drawForStateRecuperarC();
                      break;
-     case statePlay: background (background);
+     case statePlay: background (v.background);
                      drawForStatePlay();
+                     println(v.rec);
                      break;
-     case stateJogar: background (backgroundJogo);
+     case stateJogar: background (v.backgroundJogo);
                       drawForStateJogar();
-                      
-                      if(rec.get(0).equals("gameover") || rec.get(0).equals("win")){
-                        state=stateGmov;
-                      }else{
-                        synchronized(objects){
-                          objects.clear();
-                          objects.add(0,new player(0,rec.get(0),rec.get(1),rec.get(8),rec.get(6),rec.get(14),rec.get(10),rec.get(11),rec.get(4)));
-                          objects.add(1,new player(1,rec.get(2),rec.get(3),rec.get(9),rec.get(7),rec.get(15),rec.get(12),rec.get(13),rec.get(5)));
-                          objects.add(2,new inkOrb(rec.get(16),rec.get(17)));
-                          objects.add(3,new inkOrb(rec.get(18),rec.get(19)));
-                          for(int x = 20, y = 21; y < objects.size(); x+=2, y+=2){
-                            objects.add(new enemy(rec.get(x),rec.get(y)));
-                          }
-                        }
-                        send = String.join("","tecla,", keyboard[0] ? "w" : "",  keyboard[1] ? "a" : "",  keyboard[3] ? "d" : "");
-                        
-                      }
+                      v.send = String.join("","tecla,", v.keyboard[0] ? "w" : "",  v.keyboard[1] ? "a" : "",  v.keyboard[3] ? "d" : "");
+                      v.senderC.out.println(v.send);
                       break;
-     case stateHelp: background (background);
+     case stateHelp: background (v.background);
                      drawForStateHelp();
                      break;
-     case stateGmov: background (background);
+     case stateGmov: background (v.background);
                      drawForStateGameOver();
                      break;
-     case stateRanking: background (background);
-                     
-                     synchronized(nivel){
-                       nivel.set(0, new Top3(rec.get(0),int(rec.get(1))));
-                       nivel.set(1, new Top3(rec.get(2),int(rec.get(3))));
-                       nivel.set(2, new Top3(rec.get(4),int(rec.get(5))));
-                     }
-                     synchronized(score){
-                       score.set(0, new Top3(rec.get(6),int(rec.get(7))));
-                       score.set(1, new Top3(rec.get(8),int(rec.get(9))));
-                       score.set(2, new Top3(rec.get(10),int(rec.get(11))));
-                     }
+     case stateRanking: background (v.background);
                      drawForStateRanking();
                      break;
-     case stateEspera: background (backgroundJogo);
+     case stateEspera: background (v.backgroundJogo);
                      drawForStateEspera();
-                     if(rec.get(0)=="play"){
-                       state=stateJogar;
-                     }
                      break;
-     case stateRemC: background (background);
+     case stateRemC: background (v.background);
                      drawForStateRemC();
                      break;
      default : break;
@@ -167,36 +110,26 @@ void draw() {
 
 // JUST FOR DEMO
 public void Submit() {
-  if(textboxes.get(0).Text.matches("[a-zA-Z0-9]*") && textboxesP.get(0).Text.matches("[a-zA-Z0-9]*")){
-    username = textboxes.get(0).Text;
-    password = textboxes.get(0).Text;
-    send = String.join(",", "login", username, password);
-    
-    if(rec.get(0).equals("ok")){//receber nivel, vitórias e pontuação
-      logged = 0;
-    }
-    if(rec.get(0).equals("invalid")){
-      logged = 1;
-    }
+  if(v.textboxes.get(0).Text.matches("[a-zA-Z0-9]*") && v.textboxesP.get(0).Text.matches("[a-zA-Z0-9]*")){
+    v.username = v.textboxes.get(0).nome;
+    v.password = v.textboxesP.get(0).pass;
+
+    v.send = String.join(",", "login", v.username, v.password);
+    v.senderC.out.println(v.send);
   }else{
-    logged = 1;
+    v.logged = 1;
   }
 }
 // Signup
-synchronized public void Create() {
-  if(textboxes.get(2).Text.matches("[a-zA-Z0-9]*") && textboxesP.get(1).Text.matches("[a-zA-Z0-9]*") && textboxes.get(2).Text.matches("^[A-Za-z0-9+_.-]+@(.+)$")){
-    username = textboxes.get(2).Text;
-    password = textboxesP.get(1).Text;
-    send = String.join(",", "create_accont", username, password);
-    
-    if(rec.get(0).equals("ok")){//receber nivel, vitórias e pontuação
-      logged = 0;
-    }
-    if(rec.get(0).equals("invalid")){
-      logged = 1;
-    }
+public void Create() {
+  if(v.textboxes.get(2).Text.matches("[a-zA-Z0-9]*") && v.textboxesP.get(1).Text.matches("[a-zA-Z0-9]*")){
+    v.username = v.textboxes.get(2).Text;
+    v.password = v.textboxesP.get(1).Text;
+
+    v.send = String.join(",", "create_accont", v.username, v.password);
+    v.senderC.out.println(v.send);
   }else{
-    create = 1;
+    v.create = 1;
   }
 }
 
@@ -206,136 +139,130 @@ synchronized public void Create() {
 //_______________________________________________________________________________//
 
 void mousePressed() {
-   for (TEXTBOX t : textboxes) {
+   for (TEXTBOX t : v.textboxes) {
      
      t.PRESSED(mouseX, mouseY,t);
    }
-   for (TEXTBOXP t : textboxesP) {
+   for (TEXTBOXP t : v.textboxesP) {
      t.PRESSED(mouseX, mouseY,t);
    }  
    
-   for (Caixa t : caixas) {
+   for (Caixa t : v.caixas) {
      if (t.overBox(mouseX, mouseY)){
-       switch(state){
+       switch(v.state){
          
          case stateMenu: 
-           if (t == caixas.get(0)){
-             state=stateLogin;
+           if (t == v.caixas.get(0)){
+             v.state=stateLogin;
            }
-           else if (t == caixas.get(1)){
-             state=stateCreateC;
+           else if (t == v.caixas.get(1)){
+             v.state=stateCreateC;
            }
-           else if (t == caixas.get(15)){
-             state=stateRemC;
+           else if (t == v.caixas.get(15)){
+             v.state=stateRemC;
            }
-           else if (t == caixas.get(2)){
+           else if (t == v.caixas.get(2)){
              exit();
            }
            break;
          
          case stateLogin:
-           if (t == caixas.get(3)){
-             state=stateRecuperarC;
-             textboxes.get(0).nome = "";
-             textboxes.get(0).Text = "";
-             textboxesP.get(0).pass= "";
-             textboxesP.get(0).esconde= "";
-             textboxesP.get(0).Text= "";
-             logged=2;
+           if (t == v.caixas.get(3)){
+             v.state=stateRecuperarC;
+             v.textboxes.get(0).nome = "";
+             v.textboxes.get(0).Text = "";
+             v.textboxesP.get(0).pass= "";
+             v.textboxesP.get(0).esconde= "";
+             v.textboxesP.get(0).Text= "";
+             v.logged=2;
            }
-           else if (t == caixas.get(9)){
-             state=stateMenu;
-             textboxes.get(0).nome = "";
-             textboxes.get(0).Text = "";
-             textboxesP.get(0).pass= "";
-             textboxesP.get(0).esconde= "";
-             textboxesP.get(0).Text= "";
-             logged=2;
+           else if (t == v.caixas.get(9)){
+             v.state=stateMenu;
+             v.textboxes.get(0).nome = "";
+             v.textboxes.get(0).Text = "";
+             v.textboxesP.get(0).pass= "";
+             v.textboxesP.get(0).esconde= "";
+             v.textboxesP.get(0).Text= "";
+             v.logged=2;
            }
            
-           else if (t == caixas.get(12)){
+           else if (t == v.caixas.get(12)){
              Submit();
-             if (logged==0) state=statePlay;
+             if (v.logged==0) v.state=statePlay;
            }
            break;
         
         case stateCreateC:         
-          if (t == caixas.get(9)){
-               state=stateMenu;
+          if (t == v.caixas.get(9)){
+               v.state=stateMenu;
             
            }
            break;
            
         case stateRecuperarC:         
-          if (t == caixas.get(9)){
-               state=stateMenu;
+          if (t == v.caixas.get(9)){
+               v.state=stateMenu;
            }
            break;
         case stateRemC:         
-          if (t == caixas.get(9)){
-               state=stateMenu;
+          if (t == v.caixas.get(9)){
+               v.state=stateMenu;
            }
            break;
            
         case statePlay:
-          if (t == caixas.get(5)){
-             send = String.join(",", "play", username, password);
-             
-             start = millis();
-             state=stateEspera;
+          if (t == v.caixas.get(5)){
+             v.send = String.join(",", "play", v.username, v.password);
+             v.senderC.out.println(v.send);
           }
-          else if (t == caixas.get(4)){
-             state=stateOpcoes;
+          else if (t == v.caixas.get(4)){
+             v.state=stateOpcoes;
           }
-          else if (t == caixas.get(6)){
-           send = String.join(",", "ranking", "", "");
-           
-           state=stateRanking;
-          }
-          else if (t == caixas.get(7)){
-            state=stateHelp;
-          }
-          else if (t == caixas.get(8)){
-            send = String.join(",", "logout", textboxes.get(0).Text, textboxesP.get(0).Text);
+          else if (t == v.caixas.get(6)){
+           v.send = String.join(",", "ranking", "", "");
+           v.senderC.out.println(v.send);
 
-            state=stateMenu;
-            textboxes.get(0).nome = "";
-            textboxes.get(0).Text = "";
-            textboxesP.get(0).pass= "";
-            textboxesP.get(0).esconde= "";
-            textboxesP.get(0).Text= "";
-            logged=2;
+           
+           v.state=stateRanking;
+          }
+          else if (t == v.caixas.get(7)){
+            v.state=stateHelp;
+          }
+          else if (t == v.caixas.get(8)){
+            v.send = String.join(",", "logout", v.textboxes.get(0).Text, v.textboxesP.get(0).Text);
+            v.senderC.out.println(v.send);
           }
           break;
           
         case stateRanking:
           
-          if (t == caixas.get(9)){
-             state=statePlay;
+          if (t == v.caixas.get(9)){
+             v.state=statePlay;
           }
           break;
        
        case stateEspera:
-          if (t == caixas.get(9)){
-             state=statePlay;
+          if (t == v.caixas.get(9)){
+             v.state=statePlay;
           }
           break;
            
         case stateHelp:
-          if (t == caixas.get(9)){
-               state=statePlay;
+          if (t == v.caixas.get(9)){
+               v.state=statePlay;
            }
            break;
          case stateGmov:
-          if (t == caixas.get(13)){
-               send = String.join(",", "play", username, password);
+          if (t == v.caixas.get(13)){
+               v.send = String.join(",", "play", v.username, v.password);
+               v.senderC.out.println(v.send);
                
-               start = millis();
-               state=stateEspera;
-               gameover=1;
+               v.start = millis();
+               v.state=stateEspera;
+               v.gameover=1;
            }
-           else if (t == caixas.get(14)){
-               state=statePlay;
+           else if (t == v.caixas.get(14)){
+               v.state=statePlay;
            }
            break;
        }
@@ -346,61 +273,61 @@ void mousePressed() {
 
 void keyPressed(){
   
-  if (state==stateLogin){
-       if (textboxes.get(0).KEYPRESSED(key, (int)keyCode)) {
+  if (v.state==stateLogin){
+       if (v.textboxes.get(0).KEYPRESSED(key, (int)keyCode)) {
          Submit();
       }
-       if (textboxesP.get(0).KEYPRESSED(key, (int)keyCode)) {
+       if (v.textboxesP.get(0).KEYPRESSED(key, (int)keyCode)) {
          Submit();
       }
    }
-   if (state==stateCreateC){
-       if (textboxes.get(2).KEYPRESSED(key, (int)keyCode)) {
+   if (v.state==stateCreateC){
+       if (v.textboxes.get(2).KEYPRESSED(key, (int)keyCode)) {
          Create();
       }
-       if (textboxesP.get(1).KEYPRESSED(key, (int)keyCode)) {
+       if (v.textboxesP.get(1).KEYPRESSED(key, (int)keyCode)) {
          Create();
       }
-      if (textboxes.get(1).KEYPRESSED(key, (int)keyCode)) {
+      if (v.textboxes.get(1).KEYPRESSED(key, (int)keyCode)) {
          Create();
       }
    }
-   if (state==stateRecuperarC){
-      if (textboxes.get(1).KEYPRESSED(key, (int)keyCode)) {
+   if (v.state==stateRecuperarC){
+      if (v.textboxes.get(1).KEYPRESSED(key, (int)keyCode)) {
          Submit();
       }
       
    }
-   if (state==stateRemC){
-      if (textboxes.get(3).KEYPRESSED(key, (int)keyCode)) {
+   if (v.state==stateRemC){
+      if (v.textboxes.get(3).KEYPRESSED(key, (int)keyCode)) {
          Submit();
       }
-       if (textboxesP.get(2).KEYPRESSED(key, (int)keyCode)) {
+       if (v.textboxesP.get(2).KEYPRESSED(key, (int)keyCode)) {
          Submit();
       }
-      if (textboxes.get(4).KEYPRESSED(key, (int)keyCode)) {
+      if (v.textboxes.get(4).KEYPRESSED(key, (int)keyCode)) {
          Submit();
       }
       
    }
    
-   if (state==stateJogar){
-     if(key == 'w'){keyboard[0]=true;}
-     if(key == 'a'){keyboard[1]=true;}
-     if(key == 'd'){keyboard[2]=true;}
+   if (v.state==stateJogar){
+     if(key == 'w'){v.keyboard[0]=true;}
+     if(key == 'a'){v.keyboard[1]=true;}
+     if(key == 'd'){v.keyboard[2]=true;}
    }
-   if (state==stateHelp){
-     if(key == 'x'){state=statePlay;}
+   if (v.state==stateHelp){
+     if(key == 'x'){v.state=statePlay;}
    }
-   if (state==stateRecuperarC){
-     if(key == 'x'){state=stateLogin;}
+   if (v.state==stateRecuperarC){
+     if(key == 'x'){v.state=stateLogin;}
    }
    
    
 }
 
 void keyReleased(){
-    if(key == 'w'){keyboard[0]=false;}
-    if(key == 'a'){keyboard[1]=false;}
-    if(key == 'd'){keyboard[2]=false;}
+    if(key == 'w'){v.keyboard[0]=false;}
+    if(key == 'a'){v.keyboard[1]=false;}
+    if(key == 'd'){v.keyboard[2]=false;}
 }

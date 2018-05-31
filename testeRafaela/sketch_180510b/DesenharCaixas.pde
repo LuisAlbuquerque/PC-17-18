@@ -83,42 +83,42 @@ void caixas(){
    Caixa caixaSairN = new Caixa("Sair",(width+500) / 2, 350,200, 50);
    
    //
-   textboxes.add(userTB); // 0
-   textboxes.add(mailTB); // 1
-   textboxes.add(userC);//2
-   textboxes.add(userR); // 3
-   textboxes.add(mailR);//4
+   v.textboxes.add(userTB); // 0
+   v.textboxes.add(mailTB); // 1
+   v.textboxes.add(userC);//2
+   v.textboxes.add(userR); // 3
+   v.textboxes.add(mailR);//4
    //
-   textboxesP.add(passTB); // 0
-   textboxesP.add(passC); //1
-   textboxesP.add(passR); //2
+   v.textboxesP.add(passTB); // 0
+   v.textboxesP.add(passC); //1
+   v.textboxesP.add(passR); //2
    
    //   
-   caixas.add(caixaL); // 0
-   caixas.add(caixaC); // 1
-   caixas.add(caixaS); // 2
+   v.caixas.add(caixaL); // 0
+   v.caixas.add(caixaC); // 1
+   v.caixas.add(caixaS); // 2
    
    //
-   caixas.add(caixaR); // 3
+   v.caixas.add(caixaR); // 3
    //
-   caixas.add(caixaO); // 4
-   caixas.add(caixaP); // 5
-   caixas.add(caixaRanking); //6
-   caixas.add(caixaHelp);//7
-   caixas.add(caixaSair);//8
+   v.caixas.add(caixaO); // 4
+   v.caixas.add(caixaP); // 5
+   v.caixas.add(caixaRanking); //6
+   v.caixas.add(caixaHelp);//7
+   v.caixas.add(caixaSair);//8
    //
-   caixas.add(caixaVoltar );//9
+   v.caixas.add(caixaVoltar );//9
    //
-   caixas.add(caixa800x600);//10
-   caixas.add(caixa1200x800);//11
+   v.caixas.add(caixa800x600);//10
+   v.caixas.add(caixa1200x800);//11
    
-   caixas.add(caixalogin);//12
+   v.caixas.add(caixalogin);//12
    
    //
-   caixas.add(caixaNovo);//13
-   caixas.add(caixaSairN);//14
+   v.caixas.add(caixaNovo);//13
+   v.caixas.add(caixaSairN);//14
    //
-   caixas.add(caixaRem);//15
+   v.caixas.add(caixaRem);//15
    
    
  }

@@ -1,10 +1,10 @@
 void drawForStateMenu() {
   fill(250, 250, 250);
   textSize(32);
-  caixas.get(0).DRAW();
-  caixas.get(1).DRAW();
-  caixas.get(2).DRAW();
-  caixas.get(15).DRAW();
+  v.caixas.get(0).DRAW();
+  v.caixas.get(1).DRAW();
+  v.caixas.get(2).DRAW();
+  v.caixas.get(15).DRAW();
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------//
@@ -18,21 +18,21 @@ void drawForStateLogin() {
    text("Password: ", 20, 180);
    
    // DRAW THE TEXTBOXES
-   textboxes.get(0).DRAW();
-   textboxesP.get(0).DRAW();
+   v.textboxes.get(0).DRAW();
+   v.textboxesP.get(0).DRAW();
    textSize(18);
-   caixas.get(3).DRAW(); 
-   caixas.get(12).DRAW();
+   v.caixas.get(3).DRAW(); 
+   v.caixas.get(12).DRAW();
    textSize(32);
-   caixas.get(9).DRAW();
+   v.caixas.get(9).DRAW();
    
    // JUST FOR DEMO (DO NOT EVER DO THAT!)
-   if (logged==0) {
+   if (v.logged==0) {
       fill(250, 250, 250);
       text("LOGIN FEITO COM SUCESSO!", 10, 300);
-      state=statePlay;
+      v.state=statePlay;
    }
-   else if (logged==1){
+   else if (v.logged==1){
      fill(250, 250, 250);
      text("LOGIN SEM SUCESSO!", 10, 300);
    }
@@ -50,18 +50,18 @@ void drawForStateCreateC() {
    text("Password: ", 20, 180);
    
    
-   // DRAW THE TEXTBOXES
-   caixas.get(9).DRAW();
-   textboxes.get(2).DRAW();
-   textboxesP.get(1).DRAW();
-   textboxes.get(1).DRAW();
+   // DRAW THE v.v.textboxES
+   v.caixas.get(9).DRAW();
+   v.textboxes.get(2).DRAW();
+   v.textboxesP.get(1).DRAW();
+   v.textboxes.get(1).DRAW();
    
    // JUST FOR DEMO (DO NOT EVER DO THAT!)
-   if (create==0) {
+   if (v.create==0) {
       fill(250, 250, 250);
       text("CONTA CRIADA COM SUCESSO !", (textWidth("CONTA CRIADA COM SUCESSO !")) / 3, 230);
    }
-   else if (create==1){
+   else if (v.create==1){
      fill(250, 250, 250);
      text("O UTILIZADOR JÁ EXISTE!", (textWidth("UTILIZADOR JÁ EXISTE!")) / 3, 230);
    }
@@ -74,8 +74,8 @@ void drawForStateRecuperarC() {
   text("Recuperar Conta", (width - textWidth("Recuperar Conta")) / 2, 60);
   textSize(24);
   text("Email: ", 20, 230);
-  textboxes.get(1).DRAW();
-  caixas.get(9).DRAW();
+  v.textboxes.get(1).DRAW();
+  v.caixas.get(9).DRAW();
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -84,27 +84,27 @@ void drawForStatePlay() {
    // LABELS
    fill(250, 250, 250);
    textSize(32);
-   text("NIVEL: "+ N, 50, 60);
-   text("SCORE: " + Score, 50 , 100);
+   text("NIVEL: "+ v.N, 50, 60);
+   text("SCORE: " + v.Score, 50 , 100);
    
    
-   caixas.get(5).DRAW();
-   //caixas.get(4).DRAW();
-   caixas.get(6).DRAW();
-   caixas.get(7).DRAW();
-   caixas.get(8).DRAW();
+   v.caixas.get(5).DRAW();
+   //v.caixas.get(4).DRAW();
+   v.caixas.get(6).DRAW();
+   v.caixas.get(7).DRAW();
+   v.caixas.get(8).DRAW();
    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------------//
 
 void resizes(int x, int y){
-  background.resize(x,y);
+  v.background.resize(x,y);
   surface.setSize(x,y);
 }
 
 void drawForStateJogar(){
-  for(Obj o : objects){
+  for(Obj o : v.objects){
     o.display();
   }
 }
@@ -125,7 +125,7 @@ void drawForStateHelp() {
   textSize(10);
   text("Clique x para voltar ao menu",20,300);
   textSize(24);
-  caixas.get(9).DRAW();
+  v.caixas.get(9).DRAW();
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -137,22 +137,22 @@ void drawForStateHelp() {
 void drawForStateGameOver(){
   fill(250, 250, 250);
   textSize(32);
-  caixas.get(13).DRAW();
-  caixas.get(14).DRAW();
+  v.caixas.get(13).DRAW();
+  v.caixas.get(14).DRAW();
   textSize(26);
-  text("NIVEL: " + N, 20, 60);
-  text("SCORE: " + Score, 20 , 100);
+  text("NIVEL: " + v.N, 20, 60);
+  text("SCORE: " + v.Score, 20 , 100);
   text("Pos:    Nome:        Nivel:", 20, 140);
   text("Pos:    Nome:        Score:", 20, 140+160);
   int y=140;
   int x=20;
-  text("1         " + nivel.get(0).nome + "               "+ nivel.get(0).n ,x, y+40);
-  text("2         " + nivel.get(1).nome + "               "+ nivel.get(1).n ,x, y+80);
-  text("3         " + nivel.get(2).nome + "               "+ nivel.get(2).n ,x, y+120);
+  text("1         " + v.nivel.get(0).nome + "               "+ v.nivel.get(0).n ,x, y+40);
+  text("2         " + v.nivel.get(1).nome + "               "+ v.nivel.get(1).n ,x, y+80);
+  text("3         " + v.nivel.get(2).nome + "               "+ v.nivel.get(2).n ,x, y+120);
    y+=160;
-  text("1         " + score.get(0).nome + "               "+ score.get(0).n ,x, y+40);
-  text("2         " + score.get(1).nome + "               "+ score.get(1).n ,x, y+80);
-  text("3         " + score.get(2).nome + "               "+ score.get(2).n ,x, y+120);
+  text("1         " + v.score.get(0).nome + "               "+ v.score.get(0).n ,x, y+40);
+  text("2         " + v.score.get(1).nome + "               "+ v.score.get(1).n ,x, y+80);
+  text("3         " + v.score.get(2).nome + "               "+ v.score.get(2).n ,x, y+120);
  
 }
 
@@ -168,24 +168,24 @@ void drawForStateRanking(){
   text("Pos:    Nome:        Score:", 750, 300);
   textSize(26);
   int y=90;
-  text("1         " + nivel.get(0).nome + "               "+ nivel.get(0).n ,20, y+40);
-  text("2         " + nivel.get(1).nome + "               "+ nivel.get(1).n ,20, y+80);
-  text("3         " + nivel.get(2).nome + "               "+ nivel.get(2).n ,20, y+120);
+  text("1         " + v.nivel.get(0).nome + "               "+ v.nivel.get(0).n ,20, y+40);
+  text("2         " + v.nivel.get(1).nome + "               "+ v.nivel.get(1).n ,20, y+80);
+  text("3         " + v.nivel.get(2).nome + "               "+ v.nivel.get(2).n ,20, y+120);
   y=300;
   int x=750;
-  text("1         " + score.get(0).nome + "               "+ score.get(0).n ,x, y+40);
-  text("2         " + score.get(1).nome + "               "+ score.get(1).n ,x, y+80);
-  text("3         " + score.get(2).nome + "               "+ score.get(2).n ,x, y+120);
-  caixas.get(9).DRAW();
+  text("1         " + v.score.get(0).nome + "               "+ v.score.get(0).n ,x, y+40);
+  text("2         " + v.score.get(1).nome + "               "+ v.score.get(1).n ,x, y+80);
+  text("3         " + v.score.get(2).nome + "               "+ v.score.get(2).n ,x, y+120);
+  v.caixas.get(9).DRAW();
 }
 
 void drawForStateEspera(){
   fill(250, 250, 250);
   textSize(32);
-  int segundos = ((millis())-start)/1000; //convert milliseconds to seconds, store values.
-  int minutos = ((millis())-start) /1000 / 60;
+  int segundos = ((millis())-v.start)/1000; //convert milliseconds to seconds, store values.
+  int minutos = ((millis())-v.start) /1000 / 60;
   text(minutos+":"+segundos, width/2,height/2);
-  caixas.get(9).DRAW();
+  v.caixas.get(9).DRAW();
 }
 
 
@@ -199,10 +199,10 @@ void drawForStateRemC(){
    
    
    // DRAW THE TEXTBOXES
-   caixas.get(9).DRAW();
-   textboxes.get(3).DRAW();
-   textboxesP.get(2).DRAW();
-   textboxes.get(4).DRAW();
+   v.caixas.get(9).DRAW();
+   v.textboxes.get(3).DRAW();
+   v.textboxesP.get(2).DRAW();
+   v.textboxes.get(4).DRAW();
    /*
    // JUST FOR DEMO (DO NOT EVER DO THAT!)
    if (remove==0) {

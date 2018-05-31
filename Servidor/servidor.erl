@@ -134,7 +134,7 @@ bool_to_list(Bool)->
 %         caso contrario           : 0
 %
 player(Socket,Info,Flag,Jogo)->
-    %io:fwrite("Hello World!~n"),
+    %io:fwrite("Hello World!\n"),
 
     %    ?MODULE ! {create_accont, "ola", "xau", self()},
     %gen_tcp:send(Socket, "ola"),
@@ -173,7 +173,7 @@ player(Socket,Info,Flag,Jogo)->
     receive
 %        {tcp, Socket, Data} ->
 %            %tratar os dados
-%            io:fwrite("TCP!~n"),
+%            io:fwrite("TCP!\n"),
 %            gen_tcp:send(Socket, "ela"),
 %            case analyze(Data) of
 %                {"create_accont", Username, Password}->
@@ -196,7 +196,7 @@ player(Socket,Info,Flag,Jogo)->
 %
 %
 %        {tcp_closed, Socket} ->
-%        io:fwrite("Hello World!~n"),
+%        io:fwrite("Hello World!\n"),
 %            case flag of
 %                % ainda nao ha nelhum restito do jogador
 %                % por isso nao ha nada a fazer.
@@ -264,7 +264,7 @@ player(Socket,Info,Flag,Jogo)->
 
         {ok,_}->
             %Data = list_to_binary("ok"),
-            io:fwrite("3~n"),
+            io:fwrite("3\n"),
             gen_tcp:send(Socket,ok),
             player(Socket,Info,Flag,Jogo);
 
@@ -305,7 +305,7 @@ create_accont(Username,Password)->
     io:fwrite(Username),
     io:fwrite(Password),
     ?MODULE ! {create_accont, Username, Password, self()},
-    io:fwrite("1!~n"),
+    io:fwrite("1!\n"),
     receive {Res, ?MODULE} -> Res end.
 
 close_accont(Username,Password)->
@@ -588,10 +588,9 @@ play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_balls,Green_balls,Angle1,Angl
 loop(Map,Level,List,Pids) ->
     % criar conta................................
     %
-        io:fwrite("2!~n"),
+        io:fwrite("2!\n"),
     receive {create_accont,U,P,From,Socket}->
 
-%        io:fwrite("2!~n"),
         case maps:find(U,Map) of
             % se nao encontrar nelhum utilizador com esse nome
             % deixa criar
@@ -599,7 +598,7 @@ loop(Map,Level,List,Pids) ->
                     % username -> [Password , online, level]
                 Map2 = maps:put(U,{P,true,1,0,0},Map),
 %                From ! {ok, ?MODULE},
-                gen_tcp:send(Socket,"ok~n"),
+                gen_tcp:send(Socket,"ok\n"),
 
                 loop(Map2,Level,List,Pids);
             % caso ja exista algum utilizador com esse nome
@@ -607,7 +606,7 @@ loop(Map,Level,List,Pids) ->
             % e nao faz nada.
             _->
                 %From ! {invalid, ?MODULE},
-                gen_tcp:send(Socket,"invalid~n"),
+                gen_tcp:send(Socket,"invalid\n"),
                 loop(Map,Level,List,Pids)
         end;
 
@@ -623,31 +622,32 @@ loop(Map,Level,List,Pids) ->
             % a conta é apagada
             {ok, {P,_,_,_,_}}->
                 %From ! { ok , ?MODULE},
-                gen_tcp:send(Socket,"ok~n"),
+                gen_tcp:send(Socket,"ok\n"),
                 Map2 = maps:remove(U,Map),
                 loop(Map2,Level,List,Pids);
             % qualquer outro caso é enviado uma mensagem de erro
             _->
 %                From ! { invalid, ?MODULE},
-                gen_tcp:send(Socket,"invalid~n"),
+                gen_tcp:send(Socket,"invalid\n"),
                 loop(Map,Level,List,Pids)
         end;
     % login de uma conta..........................
     %
     {login,U,P,From,Socket}->
+      io:fwrite("coisas!\n"),
         % vereficar se a conta existe
         % e se a password é a correta
         % estar online é algo irrelevante (apsar de ser estranho)
         case maps:find(U,Map) of
             {ok,{P,_,L,Pt,V}}->
 %                From ! {ok, ?MODULE },
-                gen_tcp:send(Socket,"ok~n"),
+                gen_tcp:send(Socket,"ok\n"),
                 Map2 = maps:put(U,{P,true,L,Pt,V},Map),
                 loop(Map2,Level,List,maps:put(From,U,Pids));
             % qualquer outro caso é enviado uma mensagem de erro
             _->
 %                From ! { invalid, ?MODULE},
-                gen_tcp:send(Socket,"invalid~n"),
+                gen_tcp:send(Socket,"invalid\n"),
                 loop(Map,Level,List,Pids)
         end;
     % logout de umma conta .........................
@@ -659,13 +659,13 @@ loop(Map,Level,List,Pids) ->
         case maps:find(U,Map) of
             {ok,{P,_,L,Pt,V}}->
 %                From ! {ok, ?MODULE },
-                gen_tcp:send(Socket,"ok~n"),
+                gen_tcp:send(Socket,"ok\n"),
                 Map2 = maps:put(U,{P,false,L,Pt,V},Map),
                 loop(Map2,Level,List,maps:remove(From,Pids));
             % qualquer outro caso é enviado uma mensagem de erro
             _->
 %                From ! { invalid, ?MODULE},
-                gen_tcp:send(Socket,"invalid~n"),
+                gen_tcp:send(Socket,"invalid\n"),
                 loop(Map,Level,List,Pids)
         end;
     % subir de nivel...............................
@@ -732,7 +732,7 @@ loop(Map,Level,List,Pids) ->
 
      {play,U,P,From,Socket}->
         case maps:find(U,Map) of
-            {ok,{P,_,X}} -> gen_tcp:send(Socket,"ok~n"),
+            {ok,{P,_,X}} -> gen_tcp:send(Socket,"ok\n"),
                 case maps:find(X,Level) of
                     {ok,L} when length(L)>0 ->
                         spawn( fun()-> init_game(From,lists:get(1,L)) end),
@@ -767,7 +767,8 @@ start(Port)->
     Pid = spawn(fun() -> loop(#{},#{},[],#{}) end),
     register(?MODULE,Pid),
     start_server(Port),
-    %time_top(Pid),
+    Pid ! {top3,self()},
+    time_top(Pid),
     start(Port).
 
 

@@ -34,24 +34,24 @@ class player extends Obj{
   }
 
   void update (){
-    if(keyboard[0] == true && number == 0)
+    if(v.keyboard[0] == true && number == 0)
       aceleration = PVector.fromAngle(angle);
     aceleration.setMag(speed);    
     vector.add(aceleration);
     if(start==1){
-      float a = atan2 (objects.get(1).coords. y - coords. y, objects.get(1).coords. x - coords. x) ;
+      float a = atan2 (v.objects.get(1).coords. y - coords. y, v.objects.get(1).coords. x - coords. x) ;
       shield = PVector.fromAngle(a);
-      shield.setMag((1/sq(PVector.dist(coords,objects.get(1).coords)))*1000);
+      shield.setMag((1/sq(PVector.dist(coords,v.objects.get(1).coords)))*1000);
       vector.sub(shield);
     }
     coords.add(vector);
- //<>// //<>//
+ //<>// //<>// //<>//
  }
   
   void display(){
-    if(keyboard[1] == true && number == 0){angle-=0.07;switch1=true;}
-    if(keyboard[2] == true && number == 0){angle+=0.07;switch1=true;}
-    if(keyboard[0] == true && number == 0){ink-=1;start=1;if(switch1){speed=0.05;switch1=false;}else{if(speed<0.08){speed+=0.01;}};}
+    if(v.keyboard[1] == true && number == 0){angle-=0.07;switch1=true;}
+    if(v.keyboard[2] == true && number == 0){angle+=0.07;switch1=true;}
+    if(v.keyboard[0] == true && number == 0){ink-=1;start=1;if(switch1){speed=0.05;switch1=false;}else{if(speed<0.08){speed+=0.01;}};}
     if(number == 1){if(speed<0.08){speed+=0.01;}}
 
 
@@ -79,13 +79,13 @@ class player extends Obj{
     textFont(font);
     fill(255,215,0);
     text("Game Over", 10+360*number, 50);
-    state=stateGmov;
+    v.state=stateGmov;
     }
   }
   public Boolean aux(){
     Boolean b = true;
-    for(int x = 4; x < objects.size(); x++){
-      b = b && (PVector.dist(coords,objects.get(x).coords)>20);
+    for(int x = 4; x < v.objects.size(); x++){
+      b = b && (PVector.dist(coords,v.objects.get(x).coords)>20);
     }
   return b;
   }
