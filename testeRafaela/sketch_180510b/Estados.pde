@@ -52,6 +52,7 @@ void drawForStateCreateC() {
    
    // DRAW THE v.v.textboxES
    v.caixas.get(9).DRAW();
+   v.caixas.get(16).DRAW();
    v.textboxes.get(2).DRAW();
    v.textboxesP.get(1).DRAW();
    v.textboxes.get(1).DRAW();
@@ -84,8 +85,10 @@ void drawForStatePlay() {
    // LABELS
    fill(250, 250, 250);
    textSize(32);
-   text("NIVEL: "+ v.N, 50, 60);
-   text("SCORE: " + v.Score, 50 , 100);
+   text("NIVEL: "+ v.N, 20, 60);
+   text("VITORIAS: " + v.Vitorias, 20, 100);
+   text("SCORE: " + v.Score, 20 , 140);
+
    
    
    v.caixas.get(5).DRAW();
@@ -140,11 +143,12 @@ void drawForStateGameOver(){
   v.caixas.get(13).DRAW();
   v.caixas.get(14).DRAW();
   textSize(26);
-  text("NIVEL: " + v.N, 20, 60);
-  text("SCORE: " + v.Score, 20 , 100);
-  text("Pos:    Nome:        Nivel:", 20, 140);
-  text("Pos:    Nome:        Score:", 20, 140+160);
-  int y=140;
+  text("NIVEL: " +  v.N, 20, 60);
+  text("VITORIAS: " + v.Vitorias, 20, 100);
+  text("SCORE: " + v,Score, 20 , 140);
+  text("Pos:    Nome:        Nivel:", 20, 250);
+  text("Pos:    Nome:        Score:", 20, 250+160);
+  int y=250;
   int x=20;
   text("1         " + v.nivel.get(0).nome + "               "+ v.nivel.get(0).n ,x, y+40);
   text("2         " + v.nivel.get(1).nome + "               "+ v.nivel.get(1).n ,x, y+80);
@@ -203,6 +207,7 @@ void drawForStateRemC(){
    v.textboxes.get(3).DRAW();
    v.textboxesP.get(2).DRAW();
    v.textboxes.get(4).DRAW();
+   v.caixas.get(17).DRAW();
    /*
    // JUST FOR DEMO (DO NOT EVER DO THAT!)
    if (remove==0) {

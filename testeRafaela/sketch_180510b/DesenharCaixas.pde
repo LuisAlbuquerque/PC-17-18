@@ -32,22 +32,22 @@ void caixas(){
 
 //____________________REMOVE CONTA________________________________//
   TEXTBOX userR = new TEXTBOX();
-     userTB.X = 160;
-     userTB.Y = 103;
-     userTB.W = 200;
-     userTB.H = 35;
-     userTB.BorderEnable = false;
+     userR.X = 160;
+     userR.Y = 103;
+     userR.W = 200;
+     userR.H = 35;
+     userR.BorderEnable = false;
    
    TEXTBOX mailR = new TEXTBOX();
-     mailTB.X = 160;
-     mailTB.Y = 203;
-     mailTB.W = 500;
-     mailTB.H = 35;
-     mailTB.BorderEnable = false;
+     mailR.X = 160;
+     mailR.Y = 203;
+     mailR.W = 500;
+     mailR.H = 35;
+     mailR.BorderEnable = false;
   
   TEXTBOXP passR = new TEXTBOXP(160, 153, 200, 35);
-   passC.BorderWeight = 3;
-   passC.BorderEnable = false;
+   passR.BorderWeight = 3;
+   passR.BorderEnable = false;
      
    
    //Caixas de texto do menu
@@ -81,6 +81,10 @@ void caixas(){
    // caixas para novo jogo
    Caixa caixaNovo = new Caixa("Novo Jogo",(width+500) / 2, 250, 200, 50);
    Caixa caixaSairN = new Caixa("Sair",(width+500) / 2, 350,200, 50);
+   
+   //caixa para remover a conta e criar conta
+   Caixa caixaCreate = new Caixa("Create",(400) / 2, 200, 150, 50);
+   Caixa caixaRemove = new Caixa("Remove",(400) / 2, 200, 150, 50);
    
    //
    v.textboxes.add(userTB); // 0
@@ -119,6 +123,8 @@ void caixas(){
    v.caixas.add(caixaSairN);//14
    //
    v.caixas.add(caixaRem);//15
+   v.caixas.add(caixaCreate);//16;
+   v.caixas.add(caixaRemove);//17
    
    
  }
