@@ -283,7 +283,9 @@ void mousePressed() {
           else if (t == v.caixas.get(8)){
             v.send = String.join(",", "logout", v.username, v.password);
             v.senderC.out.println(v.send);
-            println(v.send);
+            v.username="";
+            v.password="";
+            v.mail="";
           }
           break;
           
