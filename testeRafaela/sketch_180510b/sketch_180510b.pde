@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.io.File;
@@ -13,6 +14,25 @@ import java.net.*;
 
 Variaveis v = new Variaveis();
 
+=======
+Obj[] objects= new Obj[6];
+PImage background;
+PImage backgroundJogo;
+boolean[] keyboard= {false,false,false};
+public int N = 1;
+public int Vitorias = 1;
+public int Score = 50;
+public int gameover= 1;
+ArrayList<Top3> nivel= new ArrayList<Top3>();
+ArrayList<Top3> score= new ArrayList<Top3>();
+ArrayList<TEXTBOX> textboxes = new ArrayList<TEXTBOX>();
+ArrayList<TEXTBOXP> textboxesP = new ArrayList<TEXTBOXP>();
+ArrayList<Caixa> caixas = new ArrayList<Caixa>();
+int logged = 2; // 0 para login, 1 para failed, e 2 para enquanto nao clica enter
+int create = 2; // 0 creado para sucesso, 1 para já existe o username, e 2 para enquanto nao clica enter
+int switchBackground = 1;
+//estados
+>>>>>>> Stashed changes
 final int stateMenu = 0;
 final int stateLogin = 1;
 final int stateCreateC = 2;
@@ -26,6 +46,33 @@ final int stateGmov=9;
 final int stateEspera=10;
 final int stateRemC=11;
 
+<<<<<<< Updated upstream
+=======
+int state= stateGmov;
+public int start = 0;
+int entrou = 0;
+int remove = 2;
+int  recuperate = 2;
+// variaveis caixas
+
+int mw=200;
+int mh=50;
+int mx= (width-200) / 2;
+int my1= 100;
+int my2= 200;
+int my3= 300;
+int my4= 300;
+Top3 um = new Top3();
+Top3 dois = new Top3();
+Top3 tres = new Top3();
+Top3 ums = new Top3();
+Top3 doiss = new Top3();
+Top3 tress = new Top3();
+
+ 
+
+
+>>>>>>> Stashed changes
 
 
 void setup() {
@@ -122,9 +169,10 @@ public void Submit() {
 }
 // Signup
 public void Create() {
-  if(v.textboxes.get(2).Text.matches("[a-zA-Z0-9]*") && v.textboxesP.get(1).Text.matches("[a-zA-Z0-9]*")){
+  if(v.textboxes.get(2).Text.matches("[a-zA-Z0-9]*") && v.textboxesP.get(1).Text.matches("[a-zA-Z0-9]*") && v.textbox.get(1).Text.matches("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]")){
     v.username = v.textboxes.get(2).Text;
     v.password = v.textboxesP.get(1).Text;
+    v.mail = v.textbox.get(1).Text;
 
     v.send = String.join(",", "create_accont", v.username, v.password);
     v.senderC.out.println(v.send);
@@ -133,6 +181,28 @@ public void Create() {
   }
 }
 
+public void Remove() {
+  if(v.textboxes.get(3).Text.matches("[a-zA-Z0-9]*") && v.textboxesP.get(3).Text.matches("[a-zA-Z0-9]*") && v.textbox.get(4).Text.matches("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]")){
+    v.username = v.textboxes.get(3).Text;
+    v.password = v.textboxesP.get(3).Text;
+    v.mail = v.textbox.get(4).Text;
+
+    v.send = String.join(",", "remove_accont", v.username, v.password);
+    v.senderC.out.println(v.send);
+  }else{
+    v.remove = 1;
+  }
+}
+public void Recuperate() {
+  if(v.textbox.get(1).Text.matches("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]")){
+    v.mail = v.textbox.get(1).Text;
+
+    v.send = String.join(",", "rec_accont", v.username, v.password);
+    v.senderC.out.println(v.send);
+  }else{
+    v.recuperate = 1;
+  }
+}
 
 
 
@@ -183,22 +253,55 @@ void mousePressed() {
            break;
         
         case stateCreateC:         
-          if (t == v.caixas.get(9)){
-               v.state=stateMenu;
-            
+          if (t == caixas.get(9)){
+               state=stateMenu;
+               textboxes.get(2).nome = "";
+               textboxes.get(2).Text = "";
+               textboxesP.get(1).pass= "";
+               textboxesP.get(1).esconde= "";
+               textboxesP.get(1).Text= "";
+               textboxes.get(1).nome = "";
+               textboxes.get(1).Text = "";
+               create=2;
+           }
+           else if (t == v.caixas.get(16)){
+             Create();
+             if (v.create==0) //v.state=statePlay;
            }
            break;
            
         case stateRecuperarC:         
+
           if (t == v.caixas.get(9)){
                v.state=stateMenu;
+               textboxes.get(1).nome = "";
+               textboxes.get(1).Text = "";
+               recuperate=2;
+           }
+           else if (t == v.caixas.get(16)){
+             Recuperate();
+             if (v.recuperate==0) //v.state=statePlay;
+           }
+                
+           break;
+      
+        case stateRemC:         
+          if (t == caixas.get(9)){
+               state=stateMenu;
+               textboxes.get(3).nome = "";
+               textboxes.get(3).Text = "";
+               textboxesP.get(2).pass= "";
+               textboxesP.get(2).esconde= "";
+               textboxesP.get(2).Text= "";
+               textboxes.get(4).nome = "";
+               textboxes.get(4).Text = "";
+               remove=2;
+           }
+          else if (t == v.caixas.get(15)){
+             Remove();
+             if (v.remove==0) //v.state=statePlay;
            }
            break;
-        case stateRemC:         
-          if (t == v.caixas.get(9)){
-               v.state=stateMenu;
-           }
-         break;
            
         case statePlay:
           if (t == v.caixas.get(5)){
