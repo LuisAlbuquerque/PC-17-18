@@ -120,7 +120,7 @@ void draw() {
                             objects.add(new enemy(rec.get(x),rec.get(y)));
                           }
                         }
-                        send = String.join("", keyboard[0] ? "w" : "",  keyboard[1] ? "a" : "",  keyboard[3] ? "d" : "");
+                        send = String.join("","tecla,", keyboard[0] ? "w" : "",  keyboard[1] ? "a" : "",  keyboard[3] ? "d" : "");
                       }
                       break;
      case stateHelp: background (background);
