@@ -48,7 +48,7 @@ final int stateGmov=9;
 final int stateEspera=10;
 final int stateRemC=11;
 
-int state= stateEspera;
+int state= stateMenu;
 
 public int start = 0;
 // variaveis caixas
@@ -67,7 +67,7 @@ Top3 ums = new Top3("None",0);
 Top3 doiss = new Top3("None",0);
 Top3 tress = new Top3("None",0);
 
-Cliente c = new Cliente("123","321");
+Cliente c = new Cliente("localhost","1234");
 
 
 
@@ -173,16 +173,11 @@ public void Submit() {
     username = textboxes.get(0).Text;
     password = textboxes.get(0).Text;
     send = String.join(",", "login", username, password);
-    try {
-      wait();
-      if(rec.get(0).equals("ok")){//receber nivel, vitórias e pontuação
-        logged = 0;
-      }
-      if(rec.get(0).equals("invalid")){
-        logged = 1;
-      }
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+    if(rec.get(0).equals("ok")){//receber nivel, vitórias e pontuação
+      logged = 0;
+    }
+    if(rec.get(0).equals("invalid")){
+      logged = 1;
     }
   }else{
     logged = 1;
@@ -193,17 +188,12 @@ synchronized public void Create() {
   if(textboxes.get(2).Text.matches("[a-zA-Z0-9]*") && textboxesP.get(1).Text.matches("[a-zA-Z0-9]*") && textboxes.get(2).Text.matches("^[A-Za-z0-9+_.-]+@(.+)$")){
     username = textboxes.get(2).Text;
     password = textboxesP.get(1).Text;
-    send = String.join(",", "login", username, password);
-    try {
-      wait();
-      if(rec.get(0).equals("ok")){//receber nivel, vitórias e pontuação
-        logged = 0;
-      }
-      if(rec.get(0).equals("invalid")){
-        logged = 1;
-      }
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+    send = String.join(",", "create_accont", username, password);
+    if(rec.get(0).equals("ok")){//receber nivel, vitórias e pontuação
+      logged = 0;
+    }
+    if(rec.get(0).equals("invalid")){
+      logged = 1;
     }
   }else{
     create = 1;
@@ -272,6 +262,7 @@ void mousePressed() {
         case stateCreateC:         
           if (t == caixas.get(9)){
                state=stateMenu;
+            
            }
            break;
            
@@ -361,13 +352,13 @@ void keyPressed(){
    }
    if (state==stateCreateC){
        if (textboxes.get(2).KEYPRESSED(key, (int)keyCode)) {
-         Submit();
+         Create();
       }
        if (textboxesP.get(1).KEYPRESSED(key, (int)keyCode)) {
-         Submit();
+         Create();
       }
       if (textboxes.get(1).KEYPRESSED(key, (int)keyCode)) {
-         Submit();
+         Create();
       }
    }
    if (state==stateRecuperarC){
