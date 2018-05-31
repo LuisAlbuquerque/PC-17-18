@@ -75,7 +75,7 @@ void draw() {
                      break;
      case statePlay: background (v.background);
                      drawForStatePlay();
-                     println(v.rec);
+                     //println(v.rec);
                      break;
      case stateJogar: background (v.backgroundJogo);
                       drawForStateJogar();
@@ -172,8 +172,12 @@ void mousePressed() {
              v.senderC.out.println(v.send);
            }
            else if (t == v.caixas.get(9)){
-             v.send = String.join(",", "logout", v.username, v.password);
-             v.senderC.out.println(v.send);
+            v.state=stateMenu;
+            v.textboxes.get(0).nome = "";
+            v.textboxes.get(0).Text = "";
+            v.textboxesP.get(0).pass= "";
+            v.textboxesP.get(0).esconde= "";
+            v.textboxesP.get(0).Text= "";
            }
            
            else if (t == v.caixas.get(12)){
@@ -204,6 +208,7 @@ void mousePressed() {
           if (t == v.caixas.get(5)){
              v.send = String.join(",", "play", v.username, v.password);
              v.senderC.out.println(v.send);
+             println(v.send);
           }
           else if (t == v.caixas.get(4)){
              v.state=stateOpcoes;
@@ -219,8 +224,9 @@ void mousePressed() {
             v.state=stateHelp;
           }
           else if (t == v.caixas.get(8)){
-            v.send = String.join(",", "logout", v.textboxes.get(0).Text, v.textboxesP.get(0).Text);
+            v.send = String.join(",", "logout", v.username, v.password);
             v.senderC.out.println(v.send);
+            println(v.send);
           }
           break;
           

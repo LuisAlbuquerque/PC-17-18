@@ -13,9 +13,11 @@ public class Receiver implements Runnable{
       try{
         while(true){
           String r = in.readLine();
-          println(r);
           v.rec = new ArrayList<String>(Arrays.asList(r.split(",")));
-          v.altera();
+          if(!(v.rec.size() == 0)){
+            v.altera();
+            v.rec = new ArrayList<String>();
+          }
         }
       }catch(Exception e){
         e.printStackTrace();

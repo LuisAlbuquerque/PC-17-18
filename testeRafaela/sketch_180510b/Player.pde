@@ -45,7 +45,7 @@ class player extends Obj{
       vector.sub(shield);
     }
     coords.add(vector);
- //<>// //<>// //<>// //<>//
+ //<>// //<>//
  }
   
   void display(){

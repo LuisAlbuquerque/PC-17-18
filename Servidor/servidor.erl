@@ -659,13 +659,13 @@ loop(Map,Level,List,Pids) ->
         case maps:find(U,Map) of
             {ok,{P,_,L,Pt,V}}->
 %                From ! {ok, ?MODULE },
-                gen_tcp:send(Socket,"ok\n"),
+                gen_tcp:send(Socket,"approved\n"),
                 Map2 = maps:put(U,{P,false,L,Pt,V},Map),
                 loop(Map2,Level,List,maps:remove(From,Pids));
             % qualquer outro caso é enviado uma mensagem de erro
             _->
 %                From ! { invalid, ?MODULE},
-                gen_tcp:send(Socket,"invalid\n"),
+                gen_tcp:send(Socket,"unapproved\n"),
                 loop(Map,Level,List,Pids)
         end;
     % subir de nivel...............................
@@ -767,7 +767,6 @@ start(Port)->
     Pid = spawn(fun() -> loop(#{},#{},[],#{}) end),
     register(?MODULE,Pid),
     start_server(Port),
-    Pid ! {top3,self()},
     time_top(Pid),
     start(Port).
 

@@ -16,13 +16,13 @@ class enemy extends Obj{
   void display(){
 
       if(PVector.dist(coords,v.objects.get(0).coords)>PVector.dist(coords,v.objects.get(1).coords)){
-        vector= new PVector(v.objects.get(1).coords.x-coords.x,v.objects.get(1).coords.y-coords.y); //<>// //<>// //<>//
-        vector.setMag(speed); //<>// //<>// //<>//
-        coords.add(vector); //<>// //<>// //<>//
+        vector= new PVector(v.objects.get(1).coords.x-coords.x,v.objects.get(1).coords.y-coords.y); //<>//
+        vector.setMag(speed); //<>//
+        coords.add(vector); //<>//
       }else{
-        vector= new PVector(v.objects.get(0).coords.x-coords.x,v.objects.get(0).coords.y-coords.y); //<>// //<>// //<>//
-        vector.setMag(speed); //<>// //<>// //<>//
-        coords.add(vector); //<>// //<>// //<>//
+        vector= new PVector(v.objects.get(0).coords.x-coords.x,v.objects.get(0).coords.y-coords.y); //<>//
+        vector.setMag(speed); //<>//
+        coords.add(vector); //<>//
       }
 
       pushMatrix();
