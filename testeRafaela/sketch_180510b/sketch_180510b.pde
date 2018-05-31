@@ -12,7 +12,7 @@ import java.io.*;
 import java.net.*;
 
 ArrayList<String> rec = new ArrayList<String>();
-String send;
+String send = "";
 String username;
 String password;
 ArrayList<Obj> objects = new ArrayList<Obj>();
@@ -107,6 +107,7 @@ void draw() {
                      break;
      case stateJogar: background (backgroundJogo);
                       drawForStateJogar();
+                      
                       if(rec.get(0).equals("gameover") || rec.get(0).equals("win")){
                         state=stateGmov;
                       }else{
@@ -121,6 +122,7 @@ void draw() {
                           }
                         }
                         send = String.join("","tecla,", keyboard[0] ? "w" : "",  keyboard[1] ? "a" : "",  keyboard[3] ? "d" : "");
+                        
                       }
                       break;
      case stateHelp: background (background);
@@ -130,20 +132,17 @@ void draw() {
                      drawForStateGameOver();
                      break;
      case stateRanking: background (background);
-                     try {
-                       wait();
-                       synchronized(nivel){
-                         nivel.set(0, new Top3(rec.get(0),int(rec.get(1))));
-                         nivel.set(1, new Top3(rec.get(2),int(rec.get(3))));
-                         nivel.set(2, new Top3(rec.get(4),int(rec.get(5))));
-                       }
-                       synchronized(score){
-                         score.set(0, new Top3(rec.get(6),int(rec.get(7))));
-                         score.set(1, new Top3(rec.get(8),int(rec.get(9))));
-                         score.set(2, new Top3(rec.get(10),int(rec.get(11))));
-                       }
-                     } catch (InterruptedException e) {
-                       e.printStackTrace();
+                     rec2 = 1;
+                     
+                     synchronized(nivel){
+                       nivel.set(0, new Top3(rec.get(0),int(rec.get(1))));
+                       nivel.set(1, new Top3(rec.get(2),int(rec.get(3))));
+                       nivel.set(2, new Top3(rec.get(4),int(rec.get(5))));
+                     }
+                     synchronized(score){
+                       score.set(0, new Top3(rec.get(6),int(rec.get(7))));
+                       score.set(1, new Top3(rec.get(8),int(rec.get(9))));
+                       score.set(2, new Top3(rec.get(10),int(rec.get(11))));
                      }
                      drawForStateRanking();
                      break;
@@ -173,6 +172,7 @@ public void Submit() {
     username = textboxes.get(0).Text;
     password = textboxes.get(0).Text;
     send = String.join(",", "login", username, password);
+    
     if(rec.get(0).equals("ok")){//receber nivel, vitórias e pontuação
       logged = 0;
     }
@@ -189,6 +189,7 @@ synchronized public void Create() {
     username = textboxes.get(2).Text;
     password = textboxesP.get(1).Text;
     send = String.join(",", "create_accont", username, password);
+    
     if(rec.get(0).equals("ok")){//receber nivel, vitórias e pontuação
       logged = 0;
     }
@@ -280,6 +281,7 @@ void mousePressed() {
         case statePlay:
           if (t == caixas.get(5)){
              send = String.join(",", "play", username, password);
+             
              start = millis();
              state=stateEspera;
           }
@@ -288,6 +290,7 @@ void mousePressed() {
           }
           else if (t == caixas.get(6)){
            send = String.join(",", "ranking", "", "");
+           
            state=stateRanking;
           }
           else if (t == caixas.get(7)){
@@ -295,6 +298,7 @@ void mousePressed() {
           }
           else if (t == caixas.get(8)){
             send = String.join(",", "logout", textboxes.get(0).Text, textboxesP.get(0).Text);
+
             state=stateMenu;
             textboxes.get(0).nome = "";
             textboxes.get(0).Text = "";
@@ -326,6 +330,7 @@ void mousePressed() {
          case stateGmov:
           if (t == caixas.get(13)){
                send = String.join(",", "play", username, password);
+               
                start = millis();
                state=stateEspera;
                gameover=1;

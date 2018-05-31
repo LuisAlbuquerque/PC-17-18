@@ -14,7 +14,6 @@ public class Receiver implements Runnable{
         while(true){
           String r = in.readLine();
           rec = new ArrayList<String>(Arrays.asList(r.split(",")));
-          //notifyAll();
         }
       }catch(Exception e){
         e.printStackTrace();
