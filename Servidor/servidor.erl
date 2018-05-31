@@ -159,7 +159,7 @@ player(Socket,Info,Flag,Jogo)->
                     ?MODULE ! {play, Username, Password, self(),Socket},
 %                    play(Username,Password),
                     player(Socket,[Username|Password],1,Jogo);
-                {"tecla",Tecla}->
+                {"tecla",Tecla} when Flag == 2->
                     Jogo ! {self(),Tecla},
                     player(Socket,Info,Flag,Jogo);
                 _->
@@ -241,6 +241,9 @@ player(Socket,Info,Flag,Jogo)->
             %<<jogador1 pontos, jogar2 pontos2, jogar3 pontos3>>
             gen_tcp:send(Socket,Data2),
             player(Socket,Info,Flag,Jogo);
+
+        {socket,Pid}->
+            player(Socket,Info,2,Pid);
 
         {win,Level,Points,V}->
             Data = integer_to_list(Level) ++ "," ++
@@ -746,7 +749,9 @@ loop(Map,Level,List,Pids) ->
                             [H|_] = Players,
                             gen_tcp:send(Socket,"play\n"),
                             gen_tcp:send(element(1,H),"play\n"),
-                            spawn( fun()-> init_game(From,element(2,H)) end),
+                            Pid = spawn( fun()-> init_game(From,element(2,H)) end),
+                            From ! {socket,Pid},
+                            element(2,H) ! {socket,Pid},
                             loop(Map,Level,List,Pids);
 
                         true->
