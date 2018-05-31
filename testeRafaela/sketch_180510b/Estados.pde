@@ -145,7 +145,7 @@ void drawForStateGameOver(){
   textSize(26);
   text("NIVEL: " +  v.N, 20, 60);
   text("VITORIAS: " + v.Vitorias, 20, 100);
-  text("SCORE: " + v,Score, 20 , 140);
+  text("SCORE: " + v.Score, 20 , 140);
   text("Pos:    Nome:        Nivel:", 20, 250);
   text("Pos:    Nome:        Score:", 20, 250+160);
   int y=250;

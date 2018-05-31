@@ -4,6 +4,7 @@ public class Variaveis{
   String send = "";
   String username;
   String password;
+  String mail;
   ArrayList<Obj> objects = new ArrayList<Obj>();
   
   
@@ -14,6 +15,7 @@ public class Variaveis{
   boolean[] keyboard= {false,false,false};
   public int N = 1;
   public int Score = 50;
+  public int Vitorias = 0;
   public int gameover= 1;
   ArrayList<Top3> nivel= new ArrayList<Top3>();
   ArrayList<Top3> score= new ArrayList<Top3>();
@@ -24,6 +26,8 @@ public class Variaveis{
   
   int logged = 2; // 0 para login, 1 para failed, e 2 para enquanto nao clica enter
   int create = 2; // 0 criado para sucesso, 1 para já existe o username, e 2 para enquanto nao clica enter
+  int remove = 2;
+  int recuperate = 2;
   int switchBackground = 1;
   //estados
   final int stateMenu = 0;
@@ -39,7 +43,7 @@ public class Variaveis{
   final int stateEspera=10;
   final int stateRemC=11;
   
-  int state= stateJogar;
+  int state= stateMenu;
   
   public int start = 0;
   // variaveis caixas
@@ -108,12 +112,20 @@ public class Variaveis{
            state=stateEspera;
            gameover=1;
         }
+        if(state==stateRemC)
+          remove = 0;
+        if(state==stateRecuperarC)
+          recuperate = 0;
     }
     if(rec.get(0).equals("invalid")){
         if(state==stateLogin)
           logged = 1;
         if(state==stateCreateC)
           create = 1;
+        if(state==stateRemC)
+          remove = 1;
+        if(state==stateRecuperarC)
+          recuperate = 1;
     }
     if(rec.get(0).equals("approved")){
       if(state==statePlay){
