@@ -128,7 +128,7 @@ public void Create() {
     v.password = v.textboxesP.get(1).Text;
     v.mail = v.textboxes.get(1).Text;
 
-    v.send = String.join(",", "create_accont", v.username, v.password);
+    v.send = String.join(",", "create_accont", v.username, v.password, v.mail);
     v.senderC.out.println(v.send);
   }else{
     v.create = 1;
@@ -141,7 +141,7 @@ public void Remove() {
     v.password = v.textboxesP.get(3).Text;
     v.mail = v.textboxes.get(4).Text;
 
-    v.send = String.join(",", "remove_accont", v.username, v.password);
+    v.send = String.join(",", "remove_accont", v.username, v.password,v.mail);
     v.senderC.out.println(v.send);
   }else{
     v.remove = 1;
@@ -151,7 +151,7 @@ public void Recuperate() {
   if(v.textboxes.get(1).Text.matches("^[A-Za-z0-9+_.-]+@(.+)$")){
     v.mail = v.textboxes.get(1).Text;
 
-    v.send = String.join(",", "rec_accont", v.username, v.password);
+    v.send = String.join(",", "rec_accont", v.username, v.password, v.mail);
     v.senderC.out.println(v.send);
   }else{
     v.recuperate = 1;

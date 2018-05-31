@@ -28,8 +28,6 @@ void drawForStateLogin() {
    
    // JUST FOR DEMO (DO NOT EVER DO THAT!)
    if (v.logged==0) {
-      fill(250, 250, 250);
-      text("LOGIN FEITO COM SUCESSO!", 10, 300);
       v.state=statePlay;
    }
    else if (v.logged==1){
@@ -59,12 +57,11 @@ void drawForStateCreateC() {
    
    // JUST FOR DEMO (DO NOT EVER DO THAT!)
    if (v.create==0) {
-      fill(250, 250, 250);
-      text("CONTA CRIADA COM SUCESSO !", (textWidth("CONTA CRIADA COM SUCESSO !")) / 3, 230);
+      v.state=statePlay;
    }
    else if (v.create==1){
      fill(250, 250, 250);
-     text("O UTILIZADOR JÁ EXISTE!", (textWidth("UTILIZADOR JÁ EXISTE!")) / 3, 230);
+     text("O UTILIZADOR JÁ EXISTE!", 10, 350);
    }
 }
 
@@ -77,6 +74,14 @@ void drawForStateRecuperarC() {
   text("Email: ", 20, 230);
   v.textboxes.get(1).DRAW();
   v.caixas.get(9).DRAW();
+  
+  if (v.recuperate==0) {
+      v.state=stateLogin;
+   }
+   else if (v.recuperate==1){
+     fill(250, 250, 250);
+     text("Email invalido!", 10, 350);
+   }
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -208,15 +213,15 @@ void drawForStateRemC(){
    v.textboxesP.get(2).DRAW();
    v.textboxes.get(4).DRAW();
    v.caixas.get(17).DRAW();
-   /*
+   
    // JUST FOR DEMO (DO NOT EVER DO THAT!)
-   if (remove==0) {
+   if (v.remove==0) {
       fill(250, 250, 250);
-      text("CONTA REMOVIDA COM SUCESSO !", (textWidth("CONTA REMOVIDA COM SUCESSO !")) / 3, 230);
+      text("CONTA REMOVIDA COM SUCESSO !", 10, 350);
    }
-   else if (remove==1){
+   else if (v.remove==1){
      fill(250, 250, 250);
-     text("TENTA DE NOVO!", (textWidth("TENTA DE NOVO!")) / 3, 230);
+     text("TENTA DE NOVO!", 10, 350);
    }
-   */
+   
 }
