@@ -92,8 +92,8 @@ public class Variaveis{
         objects.clear();
         objects.add(0,new player(0,rec.get(0),rec.get(1),rec.get(8),rec.get(6),rec.get(14),rec.get(10),rec.get(11),rec.get(4)));
         objects.add(1,new player(1,rec.get(2),rec.get(3),rec.get(9),rec.get(7),rec.get(15),rec.get(12),rec.get(13),rec.get(5)));
-        objects.add(2,new inkOrb(rec.get(16),rec.get(17)));
-        objects.add(3,new inkOrb(rec.get(18),rec.get(19)));
+        objects.add(2,new Energy(rec.get(16),rec.get(17)));
+        objects.add(3,new Energy(rec.get(18),rec.get(19)));
         for(int x = 20, y = 21; y < objects.size(); x+=2, y+=2){
           objects.add(new enemy(rec.get(x),rec.get(y)));
         }
