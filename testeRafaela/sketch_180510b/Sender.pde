@@ -13,6 +13,7 @@ public class Sender implements Runnable{
       try{
         while(true){
           out.println(send);
+        }
       }catch(Exception e){
         e.printStackTrace();
         System.exit(0);

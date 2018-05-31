@@ -132,7 +132,6 @@ void draw() {
                      drawForStateGameOver();
                      break;
      case stateRanking: background (background);
-                     rec2 = 1;
                      
                      synchronized(nivel){
                        nivel.set(0, new Top3(rec.get(0),int(rec.get(1))));
