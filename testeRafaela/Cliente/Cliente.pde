@@ -31,11 +31,16 @@ final int stateRemC=11;
 
 void setup() {
    size(1300, 700);
+   
    v.background=loadImage("menu.png");
    v.backgroundJogo=loadImage("background5.jpg");
    v.background.resize(1300, 700);
    v.backgroundJogo.resize(1300, 700);
    caixas();
+   v.objects.add(0,new player(0,"300","500","0","0","false","0","0","300"));
+   v.objects.add(1,new player(1,"600","500","0","0","false","0","0","300"));
+   v.objects.add(2,new Energy("0","0"));
+   v.objects.add(3,new Energy("0","0"));
 
    try{
       Socket s = new Socket(v.port1, Integer.parseInt(v.port2));

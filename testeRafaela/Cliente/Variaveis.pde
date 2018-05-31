@@ -71,10 +71,6 @@ public class Variaveis{
   
   Variaveis(){
     port2 = "1234";
-    objects.add(0,new player(0,"300","500","0","0","false","0","0","300"));
-    objects.add(1,new player(1,"600","500","0","0","false","0","0","300"));
-    objects.add(2,new Energy("0","0"));
-    objects.add(3,new Energy("0","0"));
   }
   
   synchronized public void altera(){
@@ -96,14 +92,16 @@ public class Variaveis{
         objects.clear();
         objects.set(0,new player(0,rec.get(0),rec.get(1),rec.get(8),rec.get(6),rec.get(14),rec.get(10),rec.get(11),rec.get(4)));
         objects.set(1,new player(1,rec.get(2),rec.get(3),rec.get(9),rec.get(7),rec.get(15),rec.get(12),rec.get(13),rec.get(5)));
-        objects.set(2,new Energy(rec.get(16),rec.get(17)));
-        objects.set(3,new Energy(rec.get(18),rec.get(19)));
-        int x,y,z;
-        for(x = 20, y = 21,z=4; y < objects.size()-4; x+=2, y+=2,z++){
-          objects.set(z,new enemy(rec.get(x),rec.get(y)));
+        if(rec.size() > 17){
+          objects.set(2,new Energy(rec.get(16),rec.get(17)));
+          objects.set(3,new Energy(rec.get(18),rec.get(19)));
+          int x,y,z;
+          for(x = 20, y = 21,z=4; y < objects.size()-4; x+=2, y+=2,z++){
+            objects.set(z,new enemy(rec.get(x),rec.get(y)));
+          }
+          objects.add(4,new enemy(rec.get(x+2),rec.get(y+2)));
+          objects.add(4,new enemy(rec.get(x+4),rec.get(y+4)));
         }
-        objects.add(4,new enemy(rec.get(x+2),rec.get(y+2)));
-        objects.add(4,new enemy(rec.get(x+4),rec.get(y+4)));
     }
     if(rec.get(0).equals("ok")){
         if(state==stateLogin)
