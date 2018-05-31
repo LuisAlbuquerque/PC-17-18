@@ -60,9 +60,13 @@ element_in_list([H|T],E)-> if
                                    element_in_list(T,E)
                            end.
 
-analyze(Data) when is_binary(Data)->
+analyze(Data) when is_binary(Data) ->
     List = binary_to_list(Data),
-    list_to_tuple(string:split(List,",",all)).
+    list_to_tuple(string:split(string:trim(List),",",all));
+
+analyze(Data) ->
+    %List = binary_to_list(Data),
+    list_to_tuple(string:split(string:trim(Data),",",all)).
 %.......................................................................
 %.......................................................................
                 
@@ -130,37 +134,74 @@ bool_to_list(Bool)->
 %         caso contrario           : 0
 %
 player(Socket,Info,Flag,Jogo)->
-    receive
-        {tcp, Socket, Data} ->
-            %tratar os dados
-            case analyze(Data) of
+    io:fwrite("Hello World!~n"),
+
+    %    ?MODULE ! {create_accont, "ola", "xau", self()},
+    %gen_tcp:send(Socket, "ola"),
+    case gen_tcp:recv(Socket,0) of
+        {ok,B}->
+            case analyze(B) of
                 {"create_accont", Username, Password}-> 
-                    create_accont(Username, Password),
+                    ?MODULE ! {create_accont, Username, Password, self(),Socket},
+                    %create_accont(Username, Password),
                     player(Socket,[Username|Password],1,Jogo);
                 {"login", Username, Password}-> 
-                    login(Username, Password),
+                    %login(Username, Password),
+                    ?MODULE ! {login, Username, Password, self(),Socket},
                     player(Socket,[Username|Password],1,Jogo);
                 {"logout", Username, Password}-> 
-                    logout(Username, Password);
+                    ?MODULE ! {logout, Username, Password, self(),Socket};
+%                    logout(Username, Password);
                 {"close_accont", Username, Password}-> 
-                    close_accont(Username, Password);
+                    ?MODULE ! {close_accont, Username, Password, self(),Socket};
+%                    close_accont(Username, Password);
                 {"play", Username, Password}->
-                    play(Username,Password),
+                    ?MODULE ! {play, Username, Password, self(),Socket},
+%                    play(Username,Password),
                     player(Socket,[Username|Password],1,Jogo);
-                {Tecla,_,_}->
+                {"tecla",Tecla,_}->
                     Jogo ! {self(),Tecla},
                     player(Socket,Info,1,Jogo)
             end;
+        {error,closed}->
+             ?MODULE ! {logout(lists:get(0,Info),lists:get(1,Info))}
+    end,
 
-
-        {tcp_closed, Socket} ->
-            case flag of
-                % ainda nao ha nelhum restito do jogador
-                % por isso nao ha nada a fazer.
-                0-> ok;
-                %atualizar o estado do jogador para OFFLINE
-                _-> ?MODULE ! {logout(lists:get(0,Info),lists:get(1,Info))}
-            end;
+            
+    receive
+%        {tcp, Socket, Data} ->
+%            %tratar os dados
+%            io:fwrite("TCP!~n"),
+%            gen_tcp:send(Socket, "ela"),
+%            case analyze(Data) of
+%                {"create_accont", Username, Password}-> 
+%                    create_accont(Username, Password),
+%                    player(Socket,[Username|Password],1,Jogo);
+%                {"login", Username, Password}-> 
+%                    login(Username, Password),
+%                    player(Socket,[Username|Password],1,Jogo);
+%                {"logout", Username, Password}-> 
+%                    logout(Username, Password);
+%                {"close_accont", Username, Password}-> 
+%                    close_accont(Username, Password);
+%                {"play", Username, Password}->
+%                    play(Username,Password),
+%                    player(Socket,[Username|Password],1,Jogo);
+%                {Tecla,_,_}->
+%                    Jogo ! {self(),Tecla},
+%                    player(Socket,Info,1,Jogo)
+%            end;
+%
+%
+%        {tcp_closed, Socket} ->
+%        io:fwrite("Hello World!~n"),
+%            case flag of
+%                % ainda nao ha nelhum restito do jogador
+%                % por isso nao ha nada a fazer.
+%                0-> ok;
+%                %atualizar o estado do jogador para OFFLINE
+%                _-> ?MODULE ! {logout(lists:get(0,Info),lists:get(1,Info))}
+%            end;
 
         {Play,1}->
             Data = binary_to_term(Play),
@@ -186,8 +227,8 @@ player(Socket,Info,Flag,Jogo)->
                    bool_to_list(Switch2) ++"," ++
                    listPoint_to_list(Green_balls) ++","++
                    listPoint_to_list(Red_balls),
-            Data = list_to_binary(Data),
-            gen_tcp:send(Socket,Data),
+            Data2 = list_to_binary(Data),
+            gen_tcp:send(Socket,Data2),
             player(Socket,Info,Flag,Jogo);
         
         {top3,Data,Data2}->
@@ -201,10 +242,10 @@ player(Socket,Info,Flag,Jogo)->
             Data = integer_to_list(Level) ++ "," ++
             integer_to_list(Points) ++ "," ++
             integer_to_list(V),
-            Data = list_to_binary(Data),
+            Data2 = list_to_binary(Data),
             Win = list_to_binary("win"),
             gen_tcp:send(Socket,Win),
-            gen_tcp:send(Socket,Data),
+            gen_tcp:send(Socket,Data2),
             player(Socket,Info,Flag,Jogo);
 
 
@@ -212,44 +253,57 @@ player(Socket,Info,Flag,Jogo)->
             Data = integer_to_list(Level) ++ "," ++
             integer_to_list(Points) ++ "," ++
             integer_to_list(V),
-            Data = list_to_binary(Data),
+            Data2 = list_to_binary(Data),
             Lose = list_to_binary("lose"),
             gen_tcp:send(Socket,Lose),
-            gen_tcp:send(Socket,Data),
+            gen_tcp:send(Socket,Data2),
             player(Socket,Info,Flag,Jogo);
             
 
         {ok,_}->
-            Data = list_to_binary("ok"),
-            gen_tcp:send(Socket,Data),
+            %Data = list_to_binary("ok"),
+            io:fwrite("3~n"), 
+            gen_tcp:send(Socket,ok),
             player(Socket,Info,Flag,Jogo);
 
         {invalid,_}->
             Data = list_to_binary("invalid"),
             gen_tcp:send(Socket,Data),
             player(Socket,Info,Flag,Jogo)
+
             
     end.
+%        {invalid,_}->
+%            Data = list_to_binary("invalid"),
+%            gen_tcp:send(Socket,Data),
+%            player(Socket,Info,Flag,Jogo)
+%            
+%    end.
 
 server(Listen)->
     {ok,Socket} = gen_tcp:accept(Listen),
-    Player = spawn(fun() -> player(Socket,[],0,0)end),
-    gen_tcp:controlling_process(Socket, Player),
+    spawn(fun() -> player(Socket,[],0,0)end),
+    %gen_tcp:controlling_process(Socket, Player),
     server(Listen).
 
 % É criada uma sala com uma dada porta
 start_server(Port)->
 %    Room = spawn( fun()-> room([]) end),
     % fica bloqueado até receber uma conecçao
-    {ok, LSock} = gen_tcp:listen(Port,[binary,{packet,line}]),
-    spawn(fun() -> server(LSock) end).
+    {ok, LSock} = gen_tcp:listen(Port,[binary,{active,false},{packet,line},{reuseaddr,true}]),
+    %spawn(fun() -> server(LSock) end).
+    server(LSock).
 %
 %...............................................
 %
 %
 %
 create_accont(Username,Password)->
+    
+    io:fwrite(Username),
+    io:fwrite(Password),
     ?MODULE ! {create_accont, Username, Password, self()},
+    io:fwrite("1!~n"),
     receive {Res, ?MODULE} -> Res end.
 
 close_accont(Username,Password)->
@@ -354,12 +408,12 @@ move_redBall(PosBall, PosJ1, PosJ2)->
     if
         ( Dist1 > Dist2 )->
             Vector = create_vector(PosBall,PosJ2),
-            Vector = set_magnitude(Vector,1),
-            point_plus_vector(PosBall,Vector);
+            Vector2 = set_magnitude(Vector,1),
+            point_plus_vector(PosBall,Vector2);
         true->
             Vector = create_vector(PosBall,PosJ1),
-            Vector = set_magnitude(Vector,1),
-            point_plus_vector(PosBall,Vector)
+            Vector2 = set_magnitude(Vector,1),
+            point_plus_vector(PosBall,Vector2)
     end.
 
 move_redBalls(Red_balls,PosJ1,PosJ2)->
@@ -391,13 +445,13 @@ move_player_aux(Move, {X,Y}, Energy, Angle, Speed, Aceleration, Switch) ->
 
 move_player(Move, {X,Y}, Energy, Angle, Speed, Aceleration, Switch, {X2,Y2}) ->
         {{X,Y}, Energy, Angle, Speed , Aceleration, Switch} = move_player_aux(Move, {X,Y}, Energy, Angle, Speed, Aceleration, Switch),
-        Aceleration = set_magnitude(Aceleration,Speed),
+        Aceleration_aux = set_magnitude(Aceleration,Speed),
         Angle_aux = math:atan2((Y2-Y), (X2-X)),
         Vector_aux =  {math:cos(Angle_aux),math:sin(Angle_aux)},
         Dist = dist( {X,Y},{X2,Y2}),
-        Vector_aux = set_magnitude(Vector_aux,(1000/math:power(Dist))),
-        {X,Y} = point_minus_vector(point_plus_vector({X,Y},Aceleration),Vector_aux),
-        {{X,Y}, Energy + 0.01 , Angle, Speed , Aceleration, Switch}.
+        Vector_aux2 = set_magnitude(Vector_aux,(1000/math:power(Dist))),
+        {X,Y} = point_minus_vector(point_plus_vector({X,Y},Aceleration_aux),Vector_aux2),
+        {{X,Y}, Energy + 0.01 , Angle, Speed , Aceleration_aux, Switch}.
 
     
 plus_energy(Energia)-> Energia + 1. 
@@ -433,12 +487,12 @@ play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_balls,Green_balls,Angle1,Angl
                     Pos = ( test_collisions(Pos1,Green_balls) ),
                     if
                         (Pos)->
-                            E1= plus_energy(E1),
-                            Green_balls = lists:delete(Pos,Green_balls),
+                            E1_aux = plus_energy(E1),
+                            Green_balls_aux = lists:delete(Pos,Green_balls),
                             spawn_green(self(),Pos1,Pos2),
-                            Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, Red_balls,Green_balls},
-                            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, Red_balls,Green_balls},
-                            play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_balls,Green_balls,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
+                            Player1 ! {Player1,Player2,Pos1,Pos2,E1_aux,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, Red_balls,Green_balls_aux},
+                            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1_aux,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, Red_balls,Green_balls_aux},
+                            play_game(Pid,Player1, Player2,Pos1,Pos2,E1_aux,E2,Red_balls,Green_balls_aux,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
                         true->
 
                             T1 = lists:get(0,Pos1),
@@ -465,11 +519,11 @@ play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_balls,Green_balls,Angle1,Angl
                     Pos = ( test_collisions(Pos2,Green_balls) ),
                     if
                         (Pos)->
-                            E1= plus_energy(E1),
-                            Green_balls = lists:delete(Pos,Green_balls),
-                            Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, Red_balls,Green_balls},
-                            Player2 ! {Player1,Player2,Pos2,Pos1,E2,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, Red_balls,Green_balls},
-                            play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_balls,Green_balls,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
+                            E2_aux= plus_energy(E2),
+                            Green_balls_aux = lists:delete(Pos,Green_balls),
+                            Player1 ! {Player1,Player2,Pos1,Pos2,E1,E2_aux,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, Red_balls,Green_balls_aux},
+                            Player2 ! {Player1,Player2,Pos2,Pos1,E2_aux,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, Red_balls,Green_balls_aux},
+                            play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2_aux,Red_balls,Green_balls_aux,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
                         true->
                             T1 = lists:get(0,Pos2),
                             T2 = lists:get(1,Pos2),
@@ -532,26 +586,32 @@ play_game(Pid,Player1, Player2,Pos1,Pos2,E1,E2,Red_balls,Green_balls,Angle1,Angl
 loop(Map,Level,List,Pids) ->
     % criar conta................................
     %
-    receive {create_accont,U,P,From}->
+        io:fwrite("2!~n"),
+    receive {create_accont,U,P,From,Socket}->
+
+%        io:fwrite("2!~n"),
         case maps:find(U,Map) of
             % se nao encontrar nelhum utilizador com esse nome
             % deixa criar
             error ->
-                From ! {ok, ?MODULE},
                     % username -> [Password , online, level]
-                Map = maps:put(U,{P,true,1,0,0},Map),
-                loop(Map,Level,List,Pids);
+                Map2 = maps:put(U,{P,true,1,0,0},Map),
+%                From ! {ok, ?MODULE},
+                gen_tcp:send(Socket,"ok~n"),
+
+                loop(Map2,Level,List,Pids);
             % caso ja exista algum utilizador com esse nome
             % envia uma mensagem de erro
             % e nao faz nada.
             _->
-                From ! {invalid, ?MODULE},
-                    loop(Map,Level,List,Pids)
+                %From ! {invalid, ?MODULE},
+                gen_tcp:send(Socket,"invalid~n"),
+                loop(Map,Level,List,Pids)
         end;
 
     % fechar uma conta............................
     % 
-    {close_accont,U,P,From}->
+    {close_accont,U,P,From,Socket}->
         % verificar se a conta realmente existe
         % e se a Password é a correta
         case maps:find(U,Map) of
@@ -560,44 +620,50 @@ loop(Map,Level,List,Pids) ->
             % e estiver online
             % a conta é apagada
             {ok, {P,_,_,_,_}}-> 
-                From ! { ok , ?MODULE},
-                Map = maps:remove(U,Map),
-                loop(Map,Level,List,Pids);
+                %From ! { ok , ?MODULE},
+                gen_tcp:send(Socket,"ok~n"),
+                Map2 = maps:remove(U,Map),
+                loop(Map2,Level,List,Pids);
             % qualquer outro caso é enviado uma mensagem de erro
             _->
-                From ! { invalid, ?MODULE},
+%                From ! { invalid, ?MODULE},
+                gen_tcp:send(Socket,"invalid~n"),
                 loop(Map,Level,List,Pids)
         end;
     % login de uma conta..........................
     % 
-    {login,U,P,From}->
+    {login,U,P,From,Socket}->
         % vereficar se a conta existe
         % e se a password é a correta
         % estar online é algo irrelevante (apsar de ser estranho) 
         case maps:find(U,Map) of
             {ok,{P,_,L,Pt,V}}->
-                From ! {ok, ?MODULE },
-                Map = maps:put(U,{P,true,L,Pt,V},Map),
-                loop(Map,Level,List,maps:put(From,U,Pids));
+%                From ! {ok, ?MODULE },
+                gen_tcp:send(Socket,"ok~n"),
+                Map2 = maps:put(U,{P,true,L,Pt,V},Map),
+                loop(Map2,Level,List,maps:put(From,U,Pids));
             % qualquer outro caso é enviado uma mensagem de erro
             _->
-                From ! { invalid, ?MODULE},
+%                From ! { invalid, ?MODULE},
+                gen_tcp:send(Socket,"invalid~n"),
                 loop(Map,Level,List,Pids)
         end;
     % logout de umma conta .........................
     % 
-     {logout,U,P,From}->
+     {logout,U,P,From,Socket}->
         % vereficar se a conta existe
         % e se a password é a correta
         % estar ofline é algo irrelevante (apsar de ser estranho) 
         case maps:find(U,Map) of
             {ok,{P,_,L,Pt,V}}->
-                From ! {ok, ?MODULE },
-                Map = maps:put(U,{P,false,L,Pt,V},Map),
-                loop(Map,Level,List,maps:remove(From,Pids));
+%                From ! {ok, ?MODULE },
+                gen_tcp:send(Socket,"ok~n"),
+                Map2 = maps:put(U,{P,false,L,Pt,V},Map),
+                loop(Map2,Level,List,maps:remove(From,Pids));
             % qualquer outro caso é enviado uma mensagem de erro
             _->
-                From ! { invalid, ?MODULE},
+%                From ! { invalid, ?MODULE},
+                gen_tcp:send(Socket,"invalid~n"),
                 loop(Map,Level,List,Pids)
         end;
     % subir de nivel...............................
@@ -625,8 +691,8 @@ loop(Map,Level,List,Pids) ->
             if
                 ( (length(List) < 3) or (X > element(2,H)) )-> 
                         List_aux = replace(List,{U,X+1}),
-                        List = lists:keysort(2, List_aux),
-                        loop(Map,Level,List,Pids);
+                        List2 = lists:keysort(2, List_aux),
+                        loop(Map,Level,List2,Pids);
                 true->
                         loop(Map,Level,List,Pids)
 
@@ -646,25 +712,25 @@ loop(Map,Level,List,Pids) ->
             UsernameL = maps:get(Lose,Pids),
             KeyW = maps:get(UsernameW,Map),
             {P,O,L,Pt,V} = maps:get(UsernameL,Map),
-            Map = maps:put(UsernameL,{P,O,L,Pt+Points,V},Map),
+            Map2 = maps:put(UsernameL,{P,O,L,Pt+Points,V},Map),
             Lose ! {lose,L,Pt + Points,V},
             Aux =  element_in_list(3,KeyW),
             if
                 (element(5,KeyW)+1 == Aux)->
                     ?MODULE ! {levelUp,UsernameW},
-                    Map = maps:put(UsernameW,{P,O,L+1,Pt+Points,0},Map),
+                    Map3 = maps:put(UsernameW,{P,O,L+1,Pt+Points,0},Map2),
                     Win ! {win,L+1,Pt + Points,0},
-                    loop(Map,Level,List,Pids);
+                    loop(Map3,Level,List,Pids);
                 true->
-                    Map = maps:put(UsernameW,{P,O,L,Pt+Points,V+1},Map),
+                    Map3 = maps:put(UsernameW,{P,O,L,Pt+Points,V+1},Map2),
                     Win ! {win,L,Pt + Points,V},
-                    loop(Map,Level,List,Pids)
+                    loop(Map3,Level,List,Pids)
             end;
 
 
-     {play,U,P,From}->
+     {play,U,P,From,Socket}->
         case maps:find(U,Map) of
-            {ok,{P,_,X}} -> From ! {ok, ?MODULE},
+            {ok,{P,_,X}} -> gen_tcp:send(Socket,"ok~n"),
                 case maps:find(X,Level) of
                     {ok,L} when length(L)>0 -> 
                         spawn( fun()-> init_game(From,lists:get(1,L)) end),
@@ -684,7 +750,10 @@ loop(Map,Level,List,Pids) ->
                             end
                         end
                 end
-        end
+        end;
+        _->
+            loop(Map,Level,List,Pids)
+
         end.
 
 time_top(Pid)->
@@ -693,10 +762,11 @@ time_top(Pid)->
     time_top(Pid).
 
 start(Port)->
-    start_server(Port),
     Pid = spawn(fun() -> loop(#{},#{},[],#{}) end),
+    register(?MODULE,Pid),
+    start_server(Port),
     %time_top(Pid),
-    register(?MODULE,Pid).
+    start(Port).
 
 
 %...............................................
