@@ -39,7 +39,7 @@ public class Variaveis{
   final int stateEspera=10;
   final int stateRemC=11;
   
-  int state= stateMenu;
+  int state= stateJogar;
   
   public int start = 0;
   // variaveis caixas

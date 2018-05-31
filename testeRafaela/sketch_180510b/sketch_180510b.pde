@@ -79,7 +79,7 @@ void draw() {
                      break;
      case stateJogar: background (v.backgroundJogo);
                       drawForStateJogar();
-                      v.send = String.join("","tecla,", v.keyboard[0] ? "w" : "",  v.keyboard[1] ? "a" : "",  v.keyboard[3] ? "d" : "");
+                      v.send = String.join("","tecla,", v.keyboard[0] ? "w" : "",  v.keyboard[1] ? "a" : "",  v.keyboard[2] ? "d" : "");
                       v.senderC.out.println(v.send);
                       break;
      case stateHelp: background (v.background);
