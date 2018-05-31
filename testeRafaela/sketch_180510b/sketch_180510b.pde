@@ -168,22 +168,12 @@ void mousePressed() {
          
          case stateLogin:
            if (t == v.caixas.get(3)){
-             v.state=stateRecuperarC;
-             v.textboxes.get(0).nome = "";
-             v.textboxes.get(0).Text = "";
-             v.textboxesP.get(0).pass= "";
-             v.textboxesP.get(0).esconde= "";
-             v.textboxesP.get(0).Text= "";
-             v.logged=2;
+             v.send = String.join(",", "rec_accont", v.username, v.password);
+             v.senderC.out.println(v.send);
            }
            else if (t == v.caixas.get(9)){
-             v.state=stateMenu;
-             v.textboxes.get(0).nome = "";
-             v.textboxes.get(0).Text = "";
-             v.textboxesP.get(0).pass= "";
-             v.textboxesP.get(0).esconde= "";
-             v.textboxesP.get(0).Text= "";
-             v.logged=2;
+             v.send = String.join(",", "logout", v.username, v.password);
+             v.senderC.out.println(v.send);
            }
            
            else if (t == v.caixas.get(12)){
@@ -208,7 +198,7 @@ void mousePressed() {
           if (t == v.caixas.get(9)){
                v.state=stateMenu;
            }
-           break;
+         break;
            
         case statePlay:
           if (t == v.caixas.get(5)){
@@ -256,10 +246,6 @@ void mousePressed() {
           if (t == v.caixas.get(13)){
                v.send = String.join(",", "play", v.username, v.password);
                v.senderC.out.println(v.send);
-               
-               v.start = millis();
-               v.state=stateEspera;
-               v.gameover=1;
            }
            else if (t == v.caixas.get(14)){
                v.state=statePlay;

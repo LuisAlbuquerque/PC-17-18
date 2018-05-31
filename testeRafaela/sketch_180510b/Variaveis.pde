@@ -70,7 +70,7 @@ public class Variaveis{
   }
   
   synchronized public void altera(){
-    if(!rec.size() == 0){
+    if(!(rec.size() == 0)){
       if(rec.get(0).equals("lose") || rec.get(0).equals("win")){
         state=stateGmov;
       }
@@ -101,8 +101,13 @@ public class Variaveis{
           if(state==stateCreateC)
             create = 0;
           if(state==statePlay){
-             v.start = millis();
-             v.state=stateEspera;
+             start = millis();
+             state=stateEspera;
+          }
+          if(state==stateGmov){
+             start = millis();
+             state=stateEspera;
+             gameover=1;
           }
       }
       if(rec.get(0).equals("invalid")){
@@ -111,20 +116,35 @@ public class Variaveis{
           if(state==stateCreateC)
             create = 1;
       }
-      if(rec.get(0).equals("aproved")){
+      if(rec.get(0).equals("approved")){
         if(state==statePlay){
-            v.state=stateMenu;
-            v.textboxes.get(0).nome = "";
-            v.textboxes.get(0).Text = "";
-            v.textboxesP.get(0).pass= "";
-            v.textboxesP.get(0).esconde= "";
-            v.textboxesP.get(0).Text= "";
-            v.logged=2;
-          }else{
-            
-        
-      }
-      
+            state=stateMenu;
+            textboxes.get(0).nome = "";
+            textboxes.get(0).Text = "";
+            textboxesP.get(0).pass= "";
+            textboxesP.get(0).esconde= "";
+            textboxesP.get(0).Text= "";
+            logged=2;
+        }
+        if(state==stateRecuperarC){
+             state=stateMenu;
+             v.textboxes.get(0).nome = "";
+             v.textboxes.get(0).Text = "";
+             v.textboxesP.get(0).pass= "";
+             v.textboxesP.get(0).esconde= "";
+             v.textboxesP.get(0).Text= "";
+             v.logged=2;
+        }
+        if(state==stateRemC){
+             state=stateMenu;
+             v.textboxes.get(0).nome = "";
+             v.textboxes.get(0).Text = "";
+             v.textboxesP.get(0).pass= "";
+             v.textboxesP.get(0).esconde= "";
+             v.textboxesP.get(0).Text= "";
+             v.logged=2;
+        }
+      }   
     }
-  
+  }
 }
