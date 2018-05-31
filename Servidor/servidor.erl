@@ -213,7 +213,8 @@ player(Socket,Info,Flag,Jogo)->
 %            player(Socket,Info,Flag,Jogo);
 
         {_,_,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2,Red_balls,Green_balls}->
-            Data = integer_to_list(element(1,Pos1)) ++"," ++
+            Data = "jogar"++
+                   integer_to_list(element(1,Pos1)) ++"," ++
                    integer_to_list(element(2,Pos1)) ++"," ++
                    integer_to_list(element(1,Pos2)) ++"," ++
                    integer_to_list(element(2,Pos2)) ++"," ++
@@ -363,7 +364,7 @@ spawn_green(Pid,P1,P2)->
 dist(Pos1,Pos2)->
     A = math:pow(element(1,Pos2)-element(1,Pos1),2),
     B = math:pow(element(2,Pos2)-element(2,Pos1),2),
-    math:sqrt(A + B). 
+    math:sqrt(A + B).
 %    math:sqrt(math:power(element(1,Pos2)-element(1,Pos1),2) + math:power(element(2,Pos2)-element(2,Pos1),2)).
 
 generate_pos(P1,P2)->
@@ -742,7 +743,7 @@ loop(Map,Level,List,Pids) ->
      {play,U,P,From,Socket}->
         case maps:find(U,Map) of
             {ok,{P,_,X,_,_}} -> gen_tcp:send(Socket,"ok\n"),
-                    L = maps:filter(fun(K,_)-> (K == X) or (K == X+1) or (K == X-1) end,Level), 
+                    L = maps:filter(fun(K,_)-> (K == X) or (K == X+1) or (K == X-1) end,Level),
                     Players = maps:values(L),
                     if
                         (length(Players) > 0)->
@@ -757,9 +758,9 @@ loop(Map,Level,List,Pids) ->
                         true->
                             loop(Map,maps:put(X,{Socket,From},Level),List,Pids)
                     end
-                            
-                        
-                        
+
+
+
 %%                case maps:find(X,Level) of
 %                    {ok,L} when length(L)>0 ->
 %                        gen_tcp:send(Socket,"play\n"),
@@ -778,7 +779,7 @@ loop(Map,Level,List,Pids) ->
 %                                spawn( fun()-> init_game(From,lists:get(1,L)) end),
 %                                loop(Map,Level,List,Pids);
 %
-%                            _-> 
+%                            _->
 %                                    gen_tcp:send(Socket,"wait\n"),
 %                                    loop(Map,maps:put(X,From,Level),List,Pids)
 %                            end
