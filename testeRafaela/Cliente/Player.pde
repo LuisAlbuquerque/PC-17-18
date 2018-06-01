@@ -22,15 +22,15 @@ class player extends Obj{
   }
   
   player(int number_, String x,String y,String velocity, String angle_, String switch1_, String acelerationx, String acelerationy, String ink_){
-    super(int(x),int(y),"Canada.png",float(velocity));
+    super(int(x.trim()),int(y.trim()),"Canada.png",float(velocity.trim()));
     if(number_ == 1){
       change_image("portugal.png");
     }
-    aceleration= new PVector(float(acelerationx),float(acelerationy));
-    angle = float(angle_);
-    ink = int(ink_);
+    aceleration= new PVector(float(acelerationx.trim()),float(acelerationy.trim()));
+    angle = float(angle_.trim());
+    ink = int(ink_.trim());
     number = number_;
-    switch1 = boolean(switch1_);
+    switch1 = boolean(switch1_.trim());
   }
 
   void update (){

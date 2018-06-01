@@ -270,7 +270,6 @@ void mousePressed() {
           if (t == v.caixas.get(5)){
              v.send = String.join(",", "play", v.username, v.password);
              v.senderC.out.println(v.send);
-             println(v.send);
           }
           else if (t == v.caixas.get(4)){
              v.state=stateOpcoes;

@@ -7,7 +7,7 @@ class Energy extends Obj{
     super(x,y,"ink.png",0);
   }
   Energy(String x, String y){
-    super(int(x),int(y),"ink.png",0);
+    super(int(x.trim()),int(y.trim()),"ink.png",0);
   }
   void display(){     
     pushMatrix();

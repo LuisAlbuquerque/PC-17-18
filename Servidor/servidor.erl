@@ -318,7 +318,7 @@ start_server(Port)->
 %
 %
 time_reds(Pid)->
-    timer:sleep(10),
+    timer:sleep(1),
     Pid ! {red,self()},
     time_reds(Pid).
 
@@ -359,7 +359,7 @@ generate_pos(P1,P2)->
         true-> generate_pos(P1,P2)
     end.
 
-test_collisions(1,[])->
+test_collisions(_,[])->
     false;
 test_collisions(P1,[H|T])->
     Dist = dist(P1,H),
@@ -453,18 +453,18 @@ print_player(Socket,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Ace
            integer_to_list(element(2,Pos2)) ++"," ++
            integer_to_list(E1) ++"," ++
            integer_to_list(E2) ++"," ++
-           float_to_list(Angle1) ++"," ++
-           float_to_list(Angle2) ++"," ++
+           float_to_list(Angle1 ,[{decimals, 4}, compact]) ++"," ++
+           float_to_list(Angle2, [{decimals, 4}, compact]) ++"," ++
            integer_to_list(Speed1) ++"," ++
            integer_to_list(Speed2) ++"," ++
-           float_to_list(element(1,Aceleration1)) ++"," ++
-           float_to_list(element(2,Aceleration1)) ++"," ++
-           float_to_list(element(1,Aceleration2)) ++"," ++
-           float_to_list(element(2,Aceleration2)) ++"," ++
+           float_to_list(element(1,Aceleration1), [{decimals, 4}, compact]) ++"," ++
+           float_to_list(element(2,Aceleration1), [{decimals, 4}, compact]) ++"," ++
+           float_to_list(element(1,Aceleration2), [{decimals, 4}, compact]) ++"," ++
+           float_to_list(element(2,Aceleration2), [{decimals, 4}, compact]) ++"," ++
            bool_to_list(Switch1) ++"," ++
            bool_to_list(Switch2) ++"," ++
            listPoint_to_list(Green_balls) ++","++
-           listPoint_to_list(Red_balls),
+           listPoint_to_list(Red_balls) ++"\n",
    % Data2 = list_to_binary(Data),
     gen_tcp:send(Socket,Data).
     %player(Socket,Info,Flag,Jogo).
@@ -520,16 +520,18 @@ play_game(Pid,Pid1,Pid2,Player1, Player2,Pos1,Pos2,E1,E2,Red_balls,Green_balls,A
                             play_game(Pid,Pid1,Pid2,Player1, Player2,Pos1,Pos2,E1_aux,E2,Red_balls,Green_balls_aux,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
                         true->
 
-                            T1 = lists:get(0,Pos1),
-                            T2 = lists:get(1,Pos1),
+                            T1 = element(0,Pos1),
+                            T2 = element(1,Pos1),
                             if
                                 ( (T1  > 1300) or (T2 > 700) or (T1 < 0) or (T2 < 0) )->
 %                                    Player1 ! {game_over},
 %                                    Player2 ! {win};
                                     Pid ! {Pid2,Pid1};
                                 true->
-                            print_player(Player1,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, Red_balls,Green_balls),
-                            print_player(Player2,Pos2,Pos1,E2,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, Red_balls,Green_balls)
+                                  print_player(Player1,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, Red_balls,Green_balls),
+                                  print_player(Player2,Pos2,Pos1,E2,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, Red_balls,Green_balls),
+                                  play_game(Pid,Pid1,Pid2,Player1, Player2,Pos1,Pos2,E1,E2,Red_balls,Green_balls,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2)
+
                             end
                     end
             end;
@@ -551,8 +553,8 @@ play_game(Pid,Pid1,Pid2,Player1, Player2,Pos1,Pos2,E1,E2,Red_balls,Green_balls,A
                             print_player(Player2,Pos2,Pos1,E2_aux,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, Red_balls,Green_balls_aux),
                             play_game(Pid,Pid1,Pid2,Player1, Player2,Pos1,Pos2,E1,E2_aux,Red_balls,Green_balls_aux,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
                         true->
-                            T1 = lists:get(0,Pos2),
-                            T2 = lists:get(1,Pos2),
+                            T1 = element(0,Pos2),
+                            T2 = element(1,Pos2),
                             if
                                 ( (T1  > 1300) or (T2 > 700) or (T1 < 0) or (T2 < 0) )->
 %                                    Player2 ! {game_over},
@@ -566,20 +568,24 @@ play_game(Pid,Pid1,Pid2,Player1, Player2,Pos1,Pos2,E1,E2,Red_balls,Green_balls,A
                     end
             end;
         {green_bals,X,Y}->
-            print_player(Player1,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, Red_balls,lists:append([[X|Y]],Green_balls)),
-            print_player(Player2,Pos2,Pos1,E2,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, Red_balls,lists:append([[X|Y]],Green_balls));
+            print_player(Player1,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, Red_balls,lists:append([{X,Y}],Green_balls)),
+            print_player(Player2,Pos2,Pos1,E2,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, Red_balls,lists:append([{X,Y}],Green_balls)),
+            play_game(Pid,Pid1,Pid2,Player1, Player2,Pos1,Pos2,E1,E2,Red_balls,lists:append([{X,Y}],Green_balls),Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
+
 
         {red_bals,X,Y}->
-            print_player(Player1,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, lists:append([[X|Y]],Red_balls),Green_balls),
-            print_player(Player2,Pos2,Pos1,E2,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, lists:append([[X|Y]],Red_balls),Green_balls);
+            print_player(Player1,Pos1,Pos2,E1,E2,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2, lists:append([{X,Y}],Red_balls),Green_balls),
+            print_player(Player2,Pos2,Pos1,E2,E1,Angle2,Angle1,Speed2,Speed1,Aceleration2,Aceleration1,Switch2,Switch1, lists:append([{X,Y}],Red_balls),Green_balls),
+            play_game(Pid,Pid1,Pid2,Player1, Player2,Pos1,Pos2,E1,E2,lists:append([{X,Y}],Red_balls),Green_balls,Angle1,Angle2,Speed1,Speed2,Aceleration1,Aceleration2,Switch1,Switch2);
+
+
 
         {red,_}->
            spawn(fun()-> spawn_reds(self(),Pos1,Pos2) end);
 
         {green,_}->
             spawn(fun()-> spawn_green(self(),Pos1,Pos2) end)
-            end.
-
+          end.
 
 
 %

@@ -9,7 +9,7 @@ class enemy extends Obj{
         super(x,y,"enemy.png",1);
   }
   enemy(String x, String y){
-        super(int(x),int(y),"enemy.png",1);
+        super(int(x.trim()),int(y.trim()),"enemy.png",1);
   }
   
   
